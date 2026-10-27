@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Candy Boss</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: one-screen phone-first stack. Night sky, pumpkin accent, candy wrappers as the visual stars. Single dark theme by choice: it's Halloween night. */
+:root{
+  --night:#17102e; --night-2:#241a44; --moon:#fff3d2; --moon-dim:#c9bfdf;
+  --pumpkin:#ff8a2b; --pumpkin-deep:#d9651a;
+  --good:#8ef05a; --meh:#ffd84d; --yuck:#ff5f7a;
+  --card:#2b2152; --line:#3f3270;
+  --display:"Fredoka","Nunito","Segoe UI",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--moon);font-family:var(--body);font-size:17px;line-height:1.4;
+  background-image:radial-gradient(circle at 92% 4%, rgba(255,243,210,.22), transparent 7%),
+    radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent 51%),radial-gradient(1px 1px at 30% 60%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 55% 15%, #fff 50%, transparent 51%),radial-gradient(1px 1px at 70% 45%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 70%, #fff 50%, transparent 51%),radial-gradient(1.5px 1.5px at 40% 85%, #fff 50%, transparent 51%);
+  background-attachment:fixed}
+.wrap{max-width:640px;margin:0 auto;padding-block:16px 32px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:2.6rem;color:var(--pumpkin);letter-spacing:.01em}
+h2{font-size:1.7rem}
+p{margin:0}
+.muted{color:var(--moon-dim)}
+.eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--pumpkin)}
+.screen{display:flex;flex-direction:column;gap:18px}
+.btn{font-family:var(--display);font-size:1.25rem;font-weight:600;border:0;border-radius:999px;padding:14px 26px;cursor:pointer;
+  background:var(--pumpkin);color:#2a1300;box-shadow:0 5px 0 var(--pumpkin-deep);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--pumpkin-deep)}
+.btn:focus-visible,.candy:focus-visible,.chip:focus-visible,input:focus-visible{outline:3px solid var(--moon);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--moon);box-shadow:inset 0 0 0 2px var(--line)}
+.btn.big{font-size:1.6rem;padding:18px 34px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:var(--night-2);color:var(--moon);width:100%}
+.chip{font-family:var(--display);font-size:1rem;border:2px solid var(--line);background:var(--night-2);color:var(--moon);border-radius:999px;padding:8px 16px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--moon);color:var(--night);border-color:var(--moon)}
+
+/* candy wrappers */
+.candy{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;border:0;cursor:pointer;
+  font-family:var(--display);font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);
+  padding:14px 22px;min-height:64px;border-radius:10px;background:var(--c,#888);
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),inset 0 4px 0 rgba(255,255,255,.22),0 4px 10px rgba(0,0,0,.35);
+  transition:transform .12s}
+.candy::before,.candy::after{content:"";position:absolute;top:18%;bottom:18%;width:14px;background:var(--c,#888);
+  clip-path:polygon(0 50%,100% 0,100% 100%);filter:brightness(.8)}
+.candy::before{left:-12px;transform:scaleX(-1)}
+.candy::after{right:-12px}
+.candy:hover{transform:scale(1.04)}
+.candy .lbl{font-size:1.05rem;line-height:1.15}
+.candy .tag{position:absolute;top:-10px;right:-6px;font-size:1.4rem;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.candy.fav{outline:3px solid var(--good)}
+.candy.yuck{outline:3px solid var(--yuck);opacity:.75}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px 26px;padding-inline:12px}
+
+/* legend */
+.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.legend div{border-radius:12px;padding:8px 4px;background:var(--night-2);font-weight:800}
+.legend .g{color:var(--good)}.legend .m{color:var(--meh)}.legend .y{color:var(--yuck)}
+
+/* play */
+.hud{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--display)}
+.score{font-size:2rem;color:var(--moon);font-variant-numeric:tabular-nums}
+.score small{font-size:.9rem;color:var(--moon-dim);display:block;line-height:1}
+.progress{height:10px;background:var(--night-2);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--pumpkin);transition:width .3s}
+.house{display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 12px 10px;background:linear-gradient(var(--night-2),var(--card));border-radius:18px;border:1px solid var(--line)}
+.houseart{font-size:5rem;line-height:1;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
+.bowl{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 30px;padding:10px 16px 4px;width:100%}
+@media (min-width:480px){.bowl{grid-template-columns:repeat(3,1fr)}}
+.verdict{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.verdict .big{font-family:var(--display);font-size:2.2rem;line-height:1.05}
+.verdict.good .big{color:var(--good)}.verdict.meh .big{color:var(--meh)}.verdict.yuck .big{color:var(--yuck)}
+.pts{font-family:var(--display);font-size:3rem;line-height:1}
+.bag{display:flex;flex-wrap:wrap;gap:6px}
+.bag span{font-size:.85rem;font-weight:800;padding:4px 10px;border-radius:999px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);background:var(--c)}
+.stars{font-size:2.4rem;letter-spacing:.1em}
+.stat{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-weight:700}
+.stat b{font-variant-numeric:tabular-nums;text-align:right}
+.hs{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.hs li{display:flex;justify-content:space-between;padding:8px 12px;background:var(--night-2);border-radius:10px;font-weight:700}
+.hs li b{font-variant-numeric:tabular-nums}
+.pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.pop,.shake{animation:none}.candy{transition:none}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- SETUP: the parent ranks the candy -->
+<section id="setup" class="screen">
+  <div>
+    <p class="eyebrow">Parent setup</p>
+    <h1>Candy Boss</h1>
+    <p class="muted">Tap each candy to rank it. Your kids will go trick-or-treating and score points for bringing home what <em>you</em> love.</p>
+  </div>
+  <div class="legend">
+    <div class="g">⭐ Favorite<br>+10</div>
+    <div class="m">Okay<br>+2</div>
+    <div class="y">❌ Yuck<br>−5</div>
+  </div>
+  <p class="muted" style="font-size:.95rem">Tap once for ⭐ favorite, again for ❌ yuck, again to clear.</p>
+  <div id="rankGrid" class="grid"></div>
+  <div class="row">
+    <button class="btn big" id="toPlayers">Let the kids play →</button>
+    <button class="btn ghost" id="resetRanks">Clear all</button>
+  </div>
+  <p id="setupHint" class="muted" hidden>Pick at least one ⭐ favorite first.</p>
+</section>
+
+<!-- PLAYER: who is trick-or-treating -->
+<section id="players" class="screen" hidden>
+  <div>
+    <p class="eyebrow">Who's going out tonight?</p>
+    <h2>Grab your bag</h2>
+  </div>
+  <div class="panel screen">
+    <label for="kidName" style="font-weight:800">Your name</label>
+    <input id="kidName" type="text" maxlength="20" placeholder="Type your name" autocomplete="off">
+    <div style="font-weight:800">How many houses?</div>
+    <div class="row" id="houseChips">
+      <button class="chip" data-n="6" aria-pressed="false">6 houses</button>
+      <button class="chip" data-n="10" aria-pressed="true">10 houses</button>
+      <button class="chip" data-n="15" aria-pressed="false">15 houses</button>
+    </div>
+    <div class="panel" style="background:var(--night-2)">
+      <p class="eyebrow">Remember, the Candy Boss loves:</p>
+      <div id="favList" class="bag" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn big" id="startGame">Trick or treat! 🎃</button>
+    <button class="btn ghost" id="backToSetup">Parent setup</button>
+  </div>
+</section>
+
+<!-- PLAY -->
+<section id="play" class="screen" hidden>
+  <div class="hud">
+    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span> pts</div>
+    <div style="text-align:right"><small class="muted" style="display:block">House</small><span id="houseNum" style="font-size:1.4rem;font-variant-numeric:tabular-nums">1 / 10</span></div>
+  </div>
+  <div class="progress"><i id="bar" style="width:0%"></i></div>
+
+  <div class="house" id="houseCard">
+    <div class="houseart" id="houseArt">🏠</div>
+    <div id="knockWrap" class="screen" style="align-items:center">
+      <p class="muted" id="houseLine">A porch light is on…</p>
+      <button class="btn big" id="knock">Knock knock! 🚪</button>
+    </div>
+    <div id="bowlWrap" class="screen" hidden style="width:100%;align-items:center">
+      <p style="font-weight:800" id="bowlLine">"Take one!" Which candy do you pick?</p>
+      <div class="bowl" id="bowl"></div>
+    </div>
+    <div id="verdictWrap" class="verdict" hidden>
+      <div class="big" id="verdictTitle"></div>
+      <div class="pts" id="verdictPts"></div>
+      <p id="verdictLine" class="muted"></p>
+      <button class="btn big" id="nextHouse">Next house →</button>
+    </div>
+  </div>
+
+  <div>
+    <p class="eyebrow">Your bag</p>
+    <div id="bagView" class="bag" style="margin-top:6px"><span class="muted" style="background:var(--night-2);color:var(--moon-dim)">empty so far</span></div>
+  </div>
+  <button class="btn ghost" id="quit" style="align-self:flex-start">Quit</button>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="screen" hidden>
+  <div style="text-align:center">
+    <p class="eyebrow">Trick-or-treating is over</p>
+    <h2 id="resultTitle">Great haul!</h2>
+    <div class="stars" id="starRow">⭐⭐⭐</div>
+    <div class="pts" id="finalPts" style="color:var(--pumpkin)">0</div>
+    <p class="muted" id="finalLine"></p>
+  </div>
+  <div class="panel stat" id="breakdown"></div>
+  <div class="panel">
+    <p class="eyebrow">Next time, look for these</p>
+    <div id="favList2" class="bag" style="margin-top:8px"></div>
+    <p class="muted" id="missedLine" style="margin-top:10px"></p>
+  </div>
+  <div class="panel">
+    <p class="eyebrow">Top candy collectors</p>
+    <ol class="hs" id="hsList" style="margin-top:8px"></ol>
+  </div>
+  <div class="row">
+    <button class="btn big" id="again">Play again 🎃</button>
+    <button class="btn ghost" id="toSetup2">Parent setup</button>
+  </div>
+</section>
+
+</div>
+
+<script>
+// ---------- data ----------
+const CANDIES = [
+  ["Reese's Cups","#e36a1c"],["Snickers","#6b3e17"],["Kit Kat","#c8102e"],["Twix","#c9a227"],
+  ["M&M's","#7a3b1f"],["Peanut M&M's","#e8b100"],["Milky Way","#3b6d2f"],["3 Musketeers","#5b6c8f"],
+  ["Hershey's Bar","#5a3222"],["Butterfinger","#f2a600"],["Almond Joy","#1f6fb2"],["Mounds","#b4262d"],
+  ["Skittles","#d12b2b"],["Starburst","#e8336d"],["Sour Patch Kids","#2faf5a"],["Nerds","#9b3bd1"],
+  ["Swedish Fish","#d6202d"],["Twizzlers","#b3121b"],["Tootsie Roll","#4a2a1b"],["Candy Corn","#ff9f1c"],
+  ["Smarties","#d78bd9"],["Jolly Rancher","#1c9fd8"],["Dum Dums","#f04e98"],["Laffy Taffy","#8bc34a"],
+  ["Airheads","#36b3e8"],["Whoppers","#8a3a2a"],["York Peppermint","#2c2c2c"],["Crunch Bar","#2b63c9"],
+  ["Dots","#e8571f"],["Hot Tamales","#c6181f"],["Junior Mints","#1aa37a"],["Raisins (really?)","#6d1a7a"]
+].map(([name,c])=>({name,c}));
+const POINTS={fav:10,ok:2,yuck:-5};
+const HOUSES=["🏠","🏡","🏚️","🏘️","🏰","🛖","🏯","🏛️"];
+const LINES=["A porch light is on…","A jack-o'-lantern grins at you…","Spooky music drifts out…","A skeleton waves from the window…","Cobwebs everywhere. Dare you knock?","A friendly witch is handing out candy…","A dog barks inside. Still worth it…","The doorbell plays a scary tune…"];
+const GOOD_LINES=["The Candy Boss LOVES this one!","Jackpot! That's a favorite!","You've got the eye! Big points!","Yes! That's exactly what we want!"];
+const MEH_LINES=["It's okay. Not a favorite though.","Fine, but keep hunting for the good stuff.","Meh. You can do better next door."];
+const YUCK_LINES=["Ewww. The Candy Boss hates that one.","Oh no. That's a yuck candy.","Nope! Leave that one in the bowl."];
+
+// ---------- storage ----------
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let ranks=load("cb.ranks",{});       // name -> "fav" | "yuck"
+let scores=load("cb.scores",[]);     // [{name,score,houses,date}]
+let houseCount=10;
+
+// ---------- helpers ----------
+const $=id=>document.getElementById(id);
+const rankOf=n=>ranks[n]||"ok";
+const favs=()=>CANDIES.filter(c=>rankOf(c.name)==="fav");
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function show(id){["setup","players","play","results"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
+function candyEl(c,extra=""){const b=document.createElement("button");b.className="candy "+extra;b.style.setProperty("--c",c.c);b.innerHTML=`<span class="lbl">${c.name}</span>`;return b}
+function pill(c){const s=document.createElement("span");s.style.setProperty("--c",c.c);s.textContent=c.name;return s}
+
+// ---------- sound (tiny, no files) ----------
+let actx;
+function beep(kind){
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const seq=kind==="fav"?[523,659,784,1046]:kind==="ok"?[440,523]:[330,247,196];
+    seq.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==="yuck"?"sawtooth":"triangle";o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,actx.currentTime+i*.11);g.gain.exponentialRampToValueAtTime(.25,actx.currentTime+i*.11+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+i*.11+.12);o.connect(g).connect(actx.destination);o.start(actx.currentTime+i*.11);o.stop(actx.currentTime+i*.11+.14)});
+  }catch(e){}
+}
+
+// ---------- setup screen ----------
+function renderRanks(){
+  const g=$("rankGrid");g.innerHTML="";
+  CANDIES.forEach(c=>{
+    const r=rankOf(c.name);
+    const b=candyEl(c,r==="fav"?"fav":r==="yuck"?"yuck":"");
+    b.setAttribute("aria-label",`${c.name}: ${r==="fav"?"favorite":r==="yuck"?"yuck":"okay"}`);
+    if(r!=="ok")b.insertAdjacentHTML("beforeend",`<span class="tag">${r==="fav"?"⭐":"❌"}</span>`);
+    b.onclick=()=>{const next={ok:"fav",fav:"yuck",yuck:"ok"}[r];if(next==="ok")delete ranks[c.name];else ranks[c.name]=next;save("cb.ranks",ranks);renderRanks()};
+    g.appendChild(b);
+  });
+}
+$("resetRanks").onclick=()=>{ranks={};save("cb.ranks",ranks);renderRanks()};
+$("toPlayers").onclick=()=>{
+  if(!favs().length){$("setupHint").hidden=false;return}
+  $("setupHint").hidden=true;renderFavList($("favList"));show("players");$("kidName").focus();
+};
+function renderFavList(el){el.innerHTML="";favs().forEach(c=>el.appendChild(pill(c)))}
+
+// ---------- players screen ----------
+$("houseChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  [...$("houseChips").children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");houseCount=+b.dataset.n});
+$("backToSetup").onclick=()=>show("setup");
+$("kidName").value=load("cb.lastName","");
+$("startGame").onclick=startGame;
+$("kidName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
+
+// ---------- game ----------
+let G;
+function startGame(){
+  const name=($("kidName").value.trim()||"Trick-or-treater").slice(0,20);save("cb.lastName",name);
+  G={name,house:0,score:0,bag:[],picks:{fav:0,ok:0,yuck:0},missedFav:0};
+  $("whoPlays").textContent=name;renderBag();show("play");nextHouse();
+}
+function nextHouse(){
+  if(G.house>=houseCount){return finish()}
+  G.house++;
+  $("houseNum").textContent=`${G.house} / ${houseCount}`;
+  $("bar").style.width=`${((G.house-1)/houseCount)*100}%`;
+  $("scoreNum").textContent=G.score;
+  $("houseArt").textContent=pick(HOUSES);$("houseLine").textContent=pick(LINES);
+  $("knockWrap").hidden=false;$("bowlWrap").hidden=true;$("verdictWrap").hidden=true;
+  $("houseCard").classList.remove("pop","shake");
+}
+function makeBowl(){
+  // 3 or 4 candies. Most bowls hide at least one favorite; some have none so kids learn to settle for "okay".
+  const n=Math.random()<.5?3:4;
+  const f=favs(), y=CANDIES.filter(c=>rankOf(c.name)==="yuck"), o=CANDIES.filter(c=>rankOf(c.name)==="ok");
+  let bowl=[];
+  if(Math.random()<.75&&f.length)bowl.push(pick(f));
+  if(Math.random()<.6&&y.length)bowl.push(pick(y));
+  const pool=shuffle(CANDIES.filter(c=>!bowl.includes(c)&&(o.includes(c)||Math.random()<.3)));
+  while(bowl.length<n&&pool.length)bowl.push(pool.pop());
+  return shuffle(bowl);
+}
+$("knock").onclick=()=>{
+  const bowl=makeBowl();const el=$("bowl");el.innerHTML="";
+  bowl.forEach(c=>{const b=candyEl(c);b.classList.add("pop");b.onclick=()=>choose(c,bowl);el.appendChild(b)});
+  $("knockWrap").hidden=true;$("bowlWrap").hidden=false;
+};
+function choose(c,bowl){
+  const r=rankOf(c.name), pts=POINTS[r];
+  G.score+=pts;G.bag.push(c);G.picks[r]++;
+  const bestAvail=bowl.some(x=>rankOf(x.name)==="fav");
+  if(bestAvail&&r!=="fav")G.missedFav++;
+  beep(r);
+  const v=$("verdictWrap");v.className="verdict "+(r==="fav"?"good":r==="ok"?"meh":"yuck");
+  $("verdictTitle").textContent=r==="fav"?"⭐ YES!":r==="ok"?"Hmm, okay.":"❌ YUCK!";
+  $("verdictPts").textContent=(pts>0?"+":"")+pts;
+  let line=`${c.name}: ${r==="fav"?pick(GOOD_LINES):r==="ok"?pick(MEH_LINES):pick(YUCK_LINES)}`;
+  if(bestAvail&&r!=="fav"){const best=bowl.find(x=>rankOf(x.name)==="fav");line+=` The bowl had ${best.name}, a favorite!`}
+  $("verdictLine").textContent=line;
+  $("scoreNum").textContent=G.score;
+  $("bowlWrap").hidden=true;v.hidden=false;
+  $("houseCard").classList.add(r==="yuck"?"shake":"pop");
+  $("nextHouse").textContent=G.house>=houseCount?"See my score →":"Next house →";
+  renderBag();
+}
+function renderBag(){const b=$("bagView");b.innerHTML=G.bag.length?"":'<span style="background:var(--night-2);color:var(--moon-dim)">empty so far</span>';G.bag.forEach(c=>b.appendChild(pill(c)))}
+$("nextHouse").onclick=nextHouse;
+$("quit").onclick=()=>show("players");
+
+// ---------- results ----------
+function finish(){
+  const max=houseCount*POINTS.fav, pct=Math.max(0,G.score)/max;
+  const stars=pct>=.9?3:pct>=.6?2:pct>=.3?1:0;
+  $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the favorites!";
+  $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
+  $("finalPts").textContent=G.score;
+  $("finalLine").textContent=`${G.name} visited ${houseCount} houses. Perfect score would be ${max}.`;
+  $("breakdown").innerHTML=`<span>⭐ Favorites picked</span><b>${G.picks.fav}</b><span>Okay candy</span><b>${G.picks.ok}</b><span>❌ Yuck candy</span><b>${G.picks.yuck}</b>`;
+  renderFavList($("favList2"));
+  $("missedLine").textContent=G.missedFav?`You walked past a favorite ${G.missedFav} time${G.missedFav>1?"s":""}. Look closer in the bowl!`:"You never missed a favorite when one was there. Sharp eyes!";
+  scores.push({name:G.name,score:G.score,houses:houseCount,date:new Date().toISOString().slice(0,10)});
+  scores.sort((a,b)=>b.score-a.score);scores=scores.slice(0,8);save("cb.scores",scores);
+  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.houses} houses</small></span><b>${s.score}</b></li>`).join("");
+  show("results");
+}
+const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+$("again").onclick=()=>{renderFavList($("favList"));show("players")};
+$("toSetup2").onclick=()=>show("setup");
+
+// ---------- boot ----------
+renderRanks();
+if(favs().length){renderFavList($("favList"));show("players")}else show("setup");
+</script>
+</body>
+</html>
