@@ -130,8 +130,16 @@ p{margin:0}
     linear-gradient(to bottom right,transparent calc(50% - 3px),var(--yuck) calc(50% - 3px),var(--yuck) calc(50% + 3px),transparent calc(50% + 3px));
   filter:drop-shadow(0 1.5px 0 var(--ink))}
 /* PLAY NOW sits on the hero's bottom edge: the one thing to press */
-.playzone{position:relative;z-index:3;display:flex;justify-content:center;width:100%;margin-top:-34px}
-#startGame{font-size:2.15rem;padding:17px 44px 13px;box-shadow:0 6px 0 var(--ink),0 0 0 5px var(--paper);
+.playzone{position:relative;z-index:3;display:flex;justify-content:center;align-items:center;gap:12px;width:100%;margin-top:-34px}
+.sharebtn{flex:none;width:58px;height:58px;border-radius:50%;border:3px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.sharebtn svg{fill:currentColor}
+.sharebtn:hover{background:#fff}
+.sharebtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.sharebtn:focus-visible{outline:3px solid var(--orange-deep);outline-offset:3px}
+.playzone .sharebtn{box-shadow:0 5px 0 var(--ink),0 0 0 5px var(--paper)}
+.gtoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-weight:800;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;white-space:nowrap}
+.gtoast.show{opacity:1;transform:translateX(-50%)}
+#startGame{white-space:nowrap;font-size:clamp(1.45rem,7.2vw,2.15rem);padding:17px clamp(22px,8vw,44px) 13px;box-shadow:0 6px 0 var(--ink),0 0 0 5px var(--paper);
   background:linear-gradient(#ffa25c,var(--orange) 55%,#f07a2c)}
 #startGame:hover{background:linear-gradient(#ffb070,#ff9550 55%,#f7863a)}
 #startGame:active{box-shadow:0 2px 0 var(--ink),0 0 0 5px var(--paper)}
@@ -232,7 +240,9 @@ p{margin:0}
 .brand{display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;margin-top:4px}
 .wordmark{font-family:var(--logo);font-size:1.5rem;color:var(--red);letter-spacing:.01em;
   text-shadow:-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink),1.5px 1.5px 0 var(--ink),0 2.5px 0 var(--ink)}
-.endbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
+.endbtns{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:stretch}
+.endbtns .wide{grid-column:1/-1}
+.endbtns .sharebtn{height:100%;min-height:52px;width:58px}
 .endbtns .btn{font-size:1.1rem;padding:12px 8px 9px;width:100%}
 #results:not([hidden]) .card{animation:cardIn .4s cubic-bezier(.2,1.2,.4,1) both}
 #results:not([hidden]) .pct{animation:stamp .45s .15s cubic-bezier(.2,1.7,.4,1) both}
@@ -332,6 +342,7 @@ p{margin:0}
   </div>
   <div class="playzone">
     <button class="btn big" id="startGame"><span class="tri" aria-hidden="true"></span>Play now</button>
+    <button class="sharebtn" id="shareHome" aria-label="Share YuckyCandy"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4" stroke="currentColor" stroke-width="2.4" fill="none"/></svg></button>
   </div>
   <div class="yuckstrip">
     <div class="yhead"><h3 class="ystamp">Yuck!</h3><p class="ylead">Don't catch these:</p></div>
@@ -387,7 +398,8 @@ p{margin:0}
   </div>
   <div class="endbtns">
     <button class="btn" id="again">Play again</button>
-    <button class="btn ghost" id="toSetup2">Create your own yuck list</button>
+    <button class="sharebtn" id="shareScore" aria-label="Share your score"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4" stroke="currentColor" stroke-width="2.4" fill="none"/></svg></button>
+    <button class="btn ghost wide" id="toSetup2">Create your own yuck list</button>
   </div>
 </section>
 
@@ -415,6 +427,7 @@ p{margin:0}
 </section>
 
 </div>
+<div class="gtoast" id="gtoast" role="status"></div>
 
 <script>
 // ---------- data (inlined from img/manifest.json so the page works from file://) ----------
@@ -886,6 +899,15 @@ async function copyLink(){
   catch(e){const f=$("linkFallback");f.hidden=false;f.value=url;f.focus();f.select();t.className="sharehint";t.textContent="Copy this link to share your yuck list:"}
 }
 $("shareBtn").onclick=()=>{if(!listOk()){$("setupHint").hidden=false;return}save("cb.yuck",yuckSlugs);copyLink()};
+let toastT;
+function gtoast(msg){const t=$("gtoast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1800)}
+async function shareGame(text){
+  const url=gameLink();
+  if(navigator.share){try{await navigator.share({title:"YuckyCandy",text,url});return}catch(e){if(e&&e.name==="AbortError")return}}
+  try{await navigator.clipboard.writeText(url);gtoast("Link copied!")}catch(e){gtoast(url)}
+}
+$("shareHome").onclick=()=>shareGame("Halloween is coming. Train your kids to bring home the good stuff. 🎃");
+$("shareScore").onclick=()=>{const pct=$("readyPct").textContent,n=$("finalPts").textContent;shareGame(`I caught ${n} good candies and I'm ${pct.trim()} Halloween ready on YuckyCandy. Can you beat it? 🎃`)};
 $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
 $("toSetupHome").onclick=goSetup;
