@@ -74,7 +74,7 @@
 {
 "slug": "three-musketeers",
 "name": "3 Musketeers",
-"yuck": false,
+"yuck": true,
 "color": "#5b6c8f"
 },
 {
@@ -134,7 +134,7 @@
 {
 "slug": "candy-corn",
 "name": "Candy Corn",
-"yuck": false,
+"yuck": true,
 "color": "#ff9f1c"
 },
 {
@@ -170,7 +170,7 @@
 {
 "slug": "good-and-plenty",
 "name": "Good & Plenty",
-"yuck": false,
+"yuck": true,
 "color": "#8a2bb5"
 },
 {

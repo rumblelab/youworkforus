@@ -174,10 +174,10 @@ p{margin:0}
 .card .dodgelist .th .wrapimg::after{inset:-1px 6px;background-size:auto}
 .card .dodgelist:has(.th:nth-child(7)) .th{width:48px}
 .card .dodgelist:has(.th:nth-child(7)) .cap{display:none}
-.brand{display:flex;gap:8px;align-items:baseline;justify-content:center;flex-wrap:wrap;margin-top:2px}
+.brand{display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;margin-top:4px}
 .wordmark{font-family:var(--logo);font-size:1.25rem;color:var(--red);letter-spacing:.01em;
   text-shadow:-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink),1.5px 1.5px 0 var(--ink),0 2.5px 0 var(--ink)}
-.brand .domain{font-weight:900;font-size:.85rem;color:var(--ink-soft)}
+.brand .domain{font-family:var(--display);font-size:1.05rem;letter-spacing:.04em;color:var(--ink)}
 .brand .domain:empty{display:none}
 .endbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
 .endbtns .btn{font-size:1.1rem;padding:12px 8px 9px;width:100%}
@@ -212,7 +212,13 @@ p{margin:0}
 .drag-ghost{position:fixed;z-index:50;width:170px;pointer-events:none;opacity:.95;background:#fff;border-color:var(--ink);box-shadow:3px 4px 0 var(--ink);transform:translate(-50%,-50%) scale(1.05) rotate(-4deg)}
 .tile.lifted{opacity:.3}
 .empty{color:var(--ink-soft);font-weight:800;font-size:.85rem;text-align:center;padding:8px 4px}
-.sharepanel{gap:10px;display:flex;flex-direction:column}
+.actions{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.actionbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.actionbtns .btn{width:100%;padding-inline:10px;font-size:1.35rem;white-space:nowrap}
+@media (max-width:420px){.actionbtns .btn{font-size:1.15rem}}
+.sharehint{font-weight:800;color:var(--ink-soft);font-size:.95rem;margin:0}
+.sharehint.ok{color:var(--good-deep,#1d7a2a)}
+#linkFallback{width:100%;font:inherit;font-weight:700;padding:10px 12px;border:2px dashed var(--ink-soft);border-radius:12px;background:#fff;color:var(--ink)}
 .sharebox{font-family:var(--body);font-weight:800;font-size:.9rem;background:var(--paper);border:2px dashed rgba(36,24,15,.4);border-radius:12px;padding:10px 12px;white-space:pre-wrap;word-break:break-all;user-select:all;-webkit-user-select:all}
 .toast{font-weight:900;color:var(--good);min-height:1.4em}
 .pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
@@ -321,20 +327,15 @@ p{margin:0}
     <div class="panel col yuckcol" data-side="yuck"><div class="sechead y"><h3>Yucky ✕</h3><span class="n" id="yuckCount"></span></div><div id="yuckGrid" class="tiles"></div></div>
     <div class="panel col yumcol" data-side="yum"><div class="sechead g"><h3>Good ✓</h3><span class="n" id="goodCount"></span></div><div id="goodGrid" class="tiles"></div></div>
   </div>
-  <div class="row" style="justify-content:center">
-    <button class="btn big" id="toPlayers">Done</button>
-    <button class="linkbtn" id="resetRanks">Reset to house rules</button>
-  </div>
-  <p id="setupHint" class="muted" hidden>You need at least one Yucky candy and at least one Good candy.</p>
-  <div class="panel sharepanel">
-    <p class="eyebrow">Share this game with your yuck list</p>
-    <p class="muted" style="font-size:.95rem;font-weight:700">Anyone who opens this link plays with the yuck list above.</p>
-    <div class="sharebox" id="shareLink"></div>
-    <div class="row">
-      <button class="btn" id="shareBtn">Share link</button>
-      <button class="btn ghost" id="copyBtn">Copy link</button>
+  <div class="panel actions">
+    <div class="actionbtns">
+      <button class="btn big" id="toPlayers">Done</button>
+      <button class="btn ghost big" id="shareBtn">🔗 Share my list</button>
     </div>
-    <div class="toast" id="toast"></div>
+    <p class="sharehint" id="toast">Share copies a link. Anyone who opens it plays with your yuck list.</p>
+    <input id="linkFallback" type="text" readonly hidden aria-label="Share link">
+    <p id="setupHint" class="muted" hidden>You need at least one Yucky candy and at least one Good candy.</p>
+    <button class="linkbtn" id="resetRanks">Reset to house rules</button>
   </div>
 </section>
 
@@ -355,7 +356,7 @@ const CANDIES = [
   {"slug":"crunch","name":"Crunch","yuck":false,"color":"#2b63c9"},
   {"slug":"100-grand","name":"100 Grand","yuck":false,"color":"#c6181f"},
   {"slug":"rolo","name":"Rolo","yuck":false,"color":"#5a2d14"},
-  {"slug":"three-musketeers","name":"3 Musketeers","yuck":false,"color":"#5b6c8f"},
+  {"slug":"three-musketeers","name":"3 Musketeers","yuck":true,"color":"#5b6c8f"},
   {"slug":"butterfinger","name":"Butterfinger","yuck":true,"color":"#f2a600"},
   {"slug":"peanut-mms","name":"Peanut M&M's","yuck":false,"color":"#e8b100"},
   {"slug":"starburst","name":"Starburst","yuck":false,"color":"#e8336d"},
@@ -365,13 +366,13 @@ const CANDIES = [
   {"slug":"almond-joy","name":"Almond Joy","yuck":true,"color":"#b4262d"},
   {"slug":"mounds","name":"Mounds","yuck":true,"color":"#1f3e8f"},
   {"slug":"junior-mints","name":"Junior Mints","yuck":true,"color":"#1aa37a"},
-  {"slug":"candy-corn","name":"Candy Corn","yuck":false,"color":"#ff9f1c"},
+  {"slug":"candy-corn","name":"Candy Corn","yuck":true,"color":"#ff9f1c"},
   {"slug":"jolly-rancher","name":"Jolly Rancher","yuck":false,"color":"#1c6fd8"},
   {"slug":"kisses","name":"Hershey's Kisses","yuck":false,"color":"#8a8f9a"},
   {"slug":"laffy-taffy","name":"Laffy Taffy","yuck":false,"color":"#c4123a"},
   {"slug":"milk-duds","name":"Milk Duds","yuck":false,"color":"#f2a600"},
   {"slug":"mike-and-ike","name":"Mike and Ike","yuck":false,"color":"#5bbf2a"},
-  {"slug":"good-and-plenty","name":"Good & Plenty","yuck":false,"color":"#8a2bb5"},
+  {"slug":"good-and-plenty","name":"Good & Plenty","yuck":true,"color":"#8a2bb5"},
   {"slug":"smarties","name":"Smarties","yuck":false,"color":"#e8c8e0"},
   {"slug":"twizzlers","name":"Twizzlers","yuck":false,"color":"#c8102e"},
   {"slug":"life-savers","name":"Life Savers","yuck":false,"color":"#d12b2b"}
@@ -393,9 +394,12 @@ const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let yuckSlugs=Array.isArray(load("cb.yuck",null))?[...new Set(load("cb.yuck",[]).filter(s=>BY_SLUG[s]))]:null;
 if(!(yuckSlugs&&yuckSlugs.length>=1&&yuckSlugs.length<CANDIES.length))yuckSlugs=DEFAULT_YUCK.slice();
+// the house rules grew from 5 to 8 candies: devices still holding the untouched old default pick up the new one
+const OLD_DEFAULT=["almond-joy","mounds","tootsie-roll","junior-mints","butterfinger"];
+if(load("cb.yuckv",1)<2){if([...yuckSlugs].sort().join()===[...OLD_DEFAULT].sort().join())yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs);save("cb.yuckv",2)}
 let best=load("cb.best",{score:0,secs:0});   // personal best on this device: good candies caught, and how long they lasted
 // SITE_URL: the game's public address, e.g. "https://yuckycandy.com". Empty means "use wherever this page is served from".
-const SITE_URL="";
+const SITE_URL="https://yuckycandy.com";
 // a shared link carries the yuck list: ?yuck=almond-joy,mounds,...
 (()=>{try{const q=new URLSearchParams(location.search).get("yuck");if(q){const list=[...new Set(q.split(",").map(x=>x.trim()).filter(x=>BY_SLUG[x]))];
   if(list.length>=1&&list.length<CANDIES.length){yuckSlugs=list;save("cb.yuck",list)}}}catch(e){}})();
@@ -500,10 +504,11 @@ function renderSetup(){
 })();
 $("resetRanks").onclick=()=>{yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup()};
 function gameLink(){
-  const base=SITE_URL||(location.origin&&location.origin!=="null"?location.origin+location.pathname:location.href.split(/[?#]/)[0]);
+  let base=SITE_URL||(location.origin&&location.origin!=="null"?location.origin+location.pathname:location.href.split(/[?#]/)[0]);
+  if(/^https?:\/\/[^/]+$/.test(base))base+="/";
   return `${base}?yuck=${yuckSlugs.join(",")}`;
 }
-function renderShareLink(){$("shareLink").textContent=gameLink();$("toast").textContent=""}
+function renderShareLink(){const t=$("toast");t.className="sharehint";t.textContent="Share copies a link. Anyone who opens it plays with your yuck list.";$("linkFallback").hidden=true}
 $("toPlayers").onclick=()=>{
   if(!listOk()){$("setupHint").hidden=false;return}
   $("setupHint").hidden=true;save("cb.yuck",yuckSlugs);goPlayers();
@@ -796,16 +801,11 @@ function endGame(){
 }
 // share the game link (from the yuck list editor)
 async function copyLink(){
-  const text=gameLink();
-  try{await navigator.clipboard.writeText(text);$("toast").textContent="Link copied!";}
-  catch(e){const r=document.createRange();r.selectNodeContents($("shareLink"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);$("toast").textContent="Link selected. Press copy on your device."}
+  const url=gameLink(), t=$("toast");
+  try{await navigator.clipboard.writeText(url);t.className="sharehint ok";t.textContent="✅ Link copied! Paste it anywhere.";}
+  catch(e){const f=$("linkFallback");f.hidden=false;f.value=url;f.focus();f.select();t.className="sharehint";t.textContent="Copy this link to share your yuck list:"}
 }
-$("copyBtn").onclick=copyLink;
-$("shareBtn").onclick=async()=>{
-  const url=gameLink();
-  if(navigator.share){try{await navigator.share({title:"YuckyCandy",text:"Think you can dodge my yuck list? 🎃",url});$("toast").textContent="Shared!";return}catch(e){if(e&&e.name==="AbortError")return}}
-  copyLink();
-};
+$("shareBtn").onclick=()=>{if(!listOk()){$("setupHint").hidden=false;return}save("cb.yuck",yuckSlugs);copyLink()};
 $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
 
