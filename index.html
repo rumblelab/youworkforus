@@ -91,19 +91,69 @@ p{margin:0}
   filter:drop-shadow(0 1px 0 var(--ink));opacity:.92}
 .th .cap{color:var(--ink)}
 
-/* ---------- START ---------- */
-#players{align-items:center;text-align:center;gap:12px}
-.hook{font-family:var(--display);font-size:1.02rem;letter-spacing:.04em;color:var(--orange-deep);text-transform:uppercase;line-height:1.2;max-width:28ch}
-.tagline{font-weight:900;font-size:1.55rem;line-height:1.12;max-width:19ch;text-wrap:balance;margin-top:-2px}
-.yuckpanel{width:100%;background:var(--yuck-bg);padding:12px 14px 16px;position:relative}
-.yuckhead{font-family:var(--display);color:var(--yuck);font-size:2.6rem;line-height:1;letter-spacing:.05em;
-  text-shadow:-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink),0 4px 0 var(--ink);transform:rotate(-2deg)}
-.yuckpanel .lead{font-weight:900;font-size:1.05rem;margin:6px 0 12px}
-.playzone{position:relative;display:flex;justify-content:center;width:100%;padding-top:4px}
-.playzone .runner{position:absolute;right:-6px;bottom:-14px;width:84px;height:auto;pointer-events:none;transform:rotate(4deg)}
-@media (max-width:420px){.playzone .runner{display:none}}
-.subline{font-weight:700;font-size:.95rem;color:var(--ink-soft);max-width:32ch;margin-top:6px}
-.howto{font-size:.85rem;color:var(--ink-soft);max-width:36ch}
+/* ---------- START: a game title screen. Comic caption, logo, tagline, a night-street hero with the ghost and falling candy, PLAY NOW, the yuck strip ---------- */
+#players{align-items:center;text-align:center;gap:10px;max-width:560px;margin-inline:auto;width:100%}
+.hook{font-family:var(--display);font-size:.92rem;letter-spacing:.05em;color:var(--ink);text-transform:uppercase;line-height:1.2;max-width:34ch;text-wrap:balance;
+  background:var(--yellow);border:2.5px solid var(--ink);border-radius:6px 9px 5px 8px;box-shadow:3px 3px 0 var(--ink);padding:7px 12px 4px;transform:rotate(-1.5deg)}
+#players .logo{margin-top:2px}
+.tagline{font-weight:900;font-size:1.45rem;line-height:1.12;max-width:19ch;text-wrap:balance;margin-top:-4px}
+/* hero: the same night street the game is played on */
+.hero{position:relative;width:100%;height:clamp(226px,60vw,264px);margin-top:4px;overflow:hidden;
+  border:3px solid var(--ink);border-radius:22px 26px 20px 24px;box-shadow:4px 5px 0 var(--ink);
+  background:
+    radial-gradient(1.3px 1.3px at 9% 14%,#fff3d2 98%,transparent),radial-gradient(1px 1px at 22% 40%,#fff3d2 98%,transparent),
+    radial-gradient(1.4px 1.4px at 41% 9%,#fff3d2 98%,transparent),radial-gradient(1px 1px at 47% 33%,rgba(255,243,210,.7) 98%,transparent),
+    radial-gradient(1px 1px at 61% 21%,#fff3d2 98%,transparent),radial-gradient(1.4px 1.4px at 74% 44%,rgba(255,243,210,.8) 98%,transparent),
+    radial-gradient(1px 1px at 93% 52%,#fff3d2 98%,transparent),radial-gradient(1px 1px at 15% 58%,rgba(255,243,210,.6) 98%,transparent),
+    radial-gradient(1.2px 1.2px at 82% 6%,#fff3d2 98%,transparent),radial-gradient(1px 1px at 33% 52%,rgba(255,243,210,.6) 98%,transparent),
+    linear-gradient(#120e2c 0%,#29205a 62%,#3d2e62 100%)}
+.hero .moon{position:absolute;right:7%;top:9%;width:clamp(34px,11%,50px);aspect-ratio:1;border-radius:50%;border:2.5px solid var(--ink);
+  background:radial-gradient(circle at 30% 38%,rgba(160,120,40,.22) 0 16%,transparent 17%),radial-gradient(circle at 66% 64%,rgba(160,120,40,.2) 0 12%,transparent 13%),
+    radial-gradient(circle at 60% 26%,rgba(160,120,40,.18) 0 8%,transparent 9%),#fff0bf;
+  box-shadow:0 0 0 7px rgba(255,236,170,.1),0 0 26px 10px rgba(255,236,170,.22)}
+.hero .street{position:absolute;left:0;right:0;bottom:0;width:100%;height:52%;display:block}
+.hero .runner{position:absolute;left:4%;bottom:32px;width:clamp(116px,34%,172px);z-index:2}
+.hero .runner img{display:block;width:100%;height:auto;filter:drop-shadow(2px 3px 0 rgba(10,6,24,.5))}
+.hero .runner::before{content:"";position:absolute;right:92%;top:34%;width:26px;height:24px;opacity:.55;
+  background:linear-gradient(#fff3d2,#fff3d2) 0 0/100% 2.5px no-repeat,linear-gradient(#fff3d2,#fff3d2) 8px 10px/70% 2.5px no-repeat,linear-gradient(#fff3d2,#fff3d2) 3px 20px/85% 2.5px no-repeat}
+.fall{position:absolute;left:var(--x);top:var(--y);width:clamp(46px,14.5%,74px);z-index:1}
+.fall img{display:block;width:100%;height:auto;transform:rotate(var(--r));
+  filter:drop-shadow(0 0 4px rgba(255,214,100,.9)) drop-shadow(0 0 12px rgba(255,190,60,.45))}
+.fall::before{content:"";position:absolute;left:22%;right:22%;bottom:92%;height:22px;opacity:.5;
+  background:repeating-linear-gradient(90deg,#fff3d2 0 2px,transparent 2px 9px);
+  -webkit-mask:linear-gradient(transparent,#000);mask:linear-gradient(transparent,#000)}
+.fall.bad img{filter:saturate(.75) brightness(.85) drop-shadow(0 2px 1px rgba(0,0,0,.4))}
+.fall.bad::before{display:none}
+.fall.bad::after{content:"";position:absolute;inset:-6px 4px;transform:rotate(var(--r));
+  background:
+    linear-gradient(to top right,transparent calc(50% - 3px),var(--yuck) calc(50% - 3px),var(--yuck) calc(50% + 3px),transparent calc(50% + 3px)),
+    linear-gradient(to bottom right,transparent calc(50% - 3px),var(--yuck) calc(50% - 3px),var(--yuck) calc(50% + 3px),transparent calc(50% + 3px));
+  filter:drop-shadow(0 1.5px 0 var(--ink))}
+/* PLAY NOW sits on the hero's bottom edge: the one thing to press */
+.playzone{position:relative;z-index:3;display:flex;justify-content:center;width:100%;margin-top:-34px}
+#startGame{font-size:2.15rem;padding:17px 44px 13px;box-shadow:0 6px 0 var(--ink),0 0 0 5px var(--paper);
+  background:linear-gradient(#ffa25c,var(--orange) 55%,#f07a2c)}
+#startGame:hover{background:linear-gradient(#ffb070,#ff9550 55%,#f7863a)}
+#startGame:active{box-shadow:0 2px 0 var(--ink),0 0 0 5px var(--paper)}
+/* the yuck list: a compact stamped strip */
+.yuckstrip{width:100%;margin-top:8px;padding:10px 12px 12px;background:var(--card);border:2.5px solid var(--ink);border-radius:var(--hand);box-shadow:3px 4px 0 var(--ink)}
+.yuckstrip .yhead{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:8px}
+.ystamp{font-family:var(--display);font-size:1.35rem;line-height:1;letter-spacing:.08em;color:#fff;background:var(--yuck);
+  padding:5px 10px 1px;border:2.5px solid var(--ink);border-radius:7px;box-shadow:0 3px 0 var(--ink);text-shadow:1.5px 1.5px 0 var(--ink);transform:rotate(-6deg)}
+.yuckstrip .ylead{font-weight:900;font-size:1rem;line-height:1.1}
+#dodgeList{gap:6px 8px}
+#dodgeList .th{width:56px}
+#dodgeList .th .wrapimg::after{inset:-3px 7px}
+#dodgeList .cap{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#dodgeList:has(.th:nth-child(11)) .th{width:47px}
+#dodgeList:has(.th:nth-child(19)) .th{width:40px}
+.subline{font-weight:800;font-size:.95rem;color:var(--ink-soft);max-width:34ch;margin-top:2px}
+.howto{font-size:.82rem;color:var(--ink-soft);max-width:38ch;margin-top:-4px}
+#players:not([hidden]) .fall{animation:candyIn .5s cubic-bezier(.3,1.5,.5,1) both;animation-delay:var(--d)}
+#players:not([hidden]) .runner{animation:dashIn .6s cubic-bezier(.2,1.1,.4,1) both}
+@keyframes candyIn{from{transform:translateY(-70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes dashIn{from{transform:translateX(-130%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){#players:not([hidden]) .fall,#players:not([hidden]) .runner{animation:none}}
 
 /* ---------- PLAY ---------- */
 #play{gap:10px}
@@ -248,14 +298,39 @@ p{margin:0}
     </svg>
   </h1>
   <p class="tagline">Train your kids to bring home the good stuff.</p>
-  <div class="panel yuckpanel">
-    <h3 class="yuckhead">YUCK!</h3>
-    <p class="lead">Don't catch these candies.</p>
-    <div id="dodgeList" class="thumbs"></div>
+  <div class="hero" aria-hidden="true">
+    <div class="moon"></div>
+    <svg class="street" viewBox="0 0 800 160" preserveAspectRatio="xMidYMax slice">
+      <defs><radialGradient id="wglow"><stop offset="0" stop-color="#ffcf5a" stop-opacity=".5"/><stop offset="1" stop-color="#ffcf5a" stop-opacity="0"/></radialGradient></defs>
+      <g fill="#241b4a"><circle cx="0" cy="70" r="30"/><circle cx="52" cy="62" r="26"/><circle cx="210" cy="66" r="30"/><circle cx="262" cy="76" r="22"/><circle cx="420" cy="62" r="28"/><circle cx="470" cy="72" r="24"/><circle cx="672" cy="64" r="30"/><circle cx="730" cy="58" r="26"/><circle cx="790" cy="70" r="28"/><rect x="0" y="66" width="800" height="50"/></g>
+      <g fill="#130e26">
+        <rect x="114" y="14" width="13" height="24"/><path d="M50 50 L102 6 L156 50Z"/><rect x="56" y="48" width="94" height="66"/>
+        <path d="M300 74 L342 40 L384 74Z"/><rect x="306" y="72" width="72" height="42"/>
+        <rect x="586" y="10" width="14" height="28"/><path d="M500 46 L563 0 L628 46Z"/><rect x="508" y="44" width="112" height="70"/>
+        <path d="M690 80 L730 52 L772 80Z"/><rect x="696" y="78" width="70" height="36"/>
+      </g>
+      <g fill="url(#wglow)"><circle cx="79" cy="68" r="20"/><circle cx="127" cy="68" r="20"/><circle cx="361" cy="86" r="16"/><circle cx="535" cy="64" r="20"/><circle cx="564" cy="64" r="20"/><circle cx="745" cy="92" r="14"/></g>
+      <g fill="#ffcf5a"><rect x="72" y="60" width="14" height="16"/><rect x="120" y="60" width="14" height="16"/><rect x="354" y="80" width="13" height="14"/><rect x="528" y="56" width="14" height="16"/><rect x="557" y="56" width="14" height="16"/><rect x="738" y="86" width="13" height="13"/></g>
+      <g fill="#2a2150"><rect x="96" y="90" width="14" height="24"/><rect x="323" y="80" width="13" height="14"/><rect x="586" y="56" width="14" height="16"/><rect x="558" y="88" width="15" height="26"/><rect x="712" y="86" width="13" height="13"/></g>
+      <g fill="#130e26"><rect x="78" y="67" width="2" height="9"/><rect x="72" y="67" width="14" height="2"/><rect x="126" y="67" width="2" height="9"/><rect x="120" y="67" width="14" height="2"/><rect x="534" y="63" width="2" height="9"/><rect x="528" y="63" width="14" height="2"/><rect x="563" y="63" width="2" height="9"/><rect x="557" y="63" width="14" height="2"/></g>
+      <ellipse cx="352" cy="109" rx="8" ry="6" fill="#f7863a"/><rect x="348" y="106" width="2.5" height="2.5" fill="#ffd36b"/><rect x="353.5" y="106" width="2.5" height="2.5" fill="#ffd36b"/>
+      <rect x="0" y="111" width="800" height="5" fill="#18241f"/><rect x="0" y="116" width="800" height="44" fill="#2c2548"/>
+      <g fill="#fff3d2" opacity=".08"><rect x="40" y="117" width="2" height="43"/><rect x="140" y="117" width="2" height="43"/><rect x="240" y="117" width="2" height="43"/><rect x="340" y="117" width="2" height="43"/><rect x="440" y="117" width="2" height="43"/><rect x="540" y="117" width="2" height="43"/><rect x="640" y="117" width="2" height="43"/><rect x="740" y="117" width="2" height="43"/></g>
+    </svg>
+    <span class="fall" style="--x:5%;--y:7%;--r:-16deg;--d:.05s"><img src="img/mms.png" alt=""></span>
+    <span class="fall" style="--x:30%;--y:5%;--r:12deg;--d:.2s"><img src="img/reeses.png" alt=""></span>
+    <span class="fall" style="--x:51%;--y:27%;--r:-22deg;--d:.12s"><img src="img/kit-kat.png" alt=""></span>
+    <span class="fall" style="--x:63%;--y:3%;--r:18deg;--d:.3s"><img src="img/skittles.png" alt=""></span>
+    <span class="fall" style="--x:43%;--y:56%;--r:8deg;--d:.38s"><img src="img/snickers.png" alt=""></span>
+    <span class="fall bad" style="--x:79%;--y:40%;--r:-10deg;--d:.25s"><img src="img/almond-joy.png" alt=""></span>
+    <span class="runner"><img src="img/ghost-run2.png" alt=""></span>
   </div>
   <div class="playzone">
     <button class="btn big" id="startGame"><span class="tri" aria-hidden="true"></span>Play now</button>
-    <img class="runner" src="img/ghost-run2.png" alt="" onerror="this.remove()">
+  </div>
+  <div class="yuckstrip">
+    <div class="yhead"><h3 class="ystamp">Yuck!</h3><p class="ylead">Don't catch these:</p></div>
+    <div id="dodgeList" class="thumbs"></div>
   </div>
   <p class="subline">A free Halloween training game for kids (and selfish parents).</p>
   <p class="howto">Slide to move the ghost. Catch the good stuff in the bucket. Three yuck candies and the night is over. It keeps getting faster!</p>
@@ -514,7 +589,12 @@ $("toPlayers").onclick=()=>{
 function goSetup(){renderSetup();show("setup")}
 
 // ---------- start screen ----------
-function goPlayers(){fillThumbs($("dodgeList"),yucks());show("players")}
+function goPlayers(){
+  fillThumbs($("dodgeList"),yucks());
+  // the hero's falling candy follows the house rules: glowing good ones, one crossed-out yuck
+  const fav=["mms","reeses","kit-kat","skittles","snickers","sour-patch-kids","twix","milky-way"].map(s=>BY_SLUG[s]).filter(c=>!isYuck(c)), gs=[...fav,...goods().filter(c=>!fav.includes(c))];
+  let gi=0;document.querySelectorAll("#players .fall").forEach(el=>{const c=el.classList.contains("bad")?yucks()[0]:gs[gi++];el.hidden=!c;if(c)el.firstChild.src=imgSrc(c)});
+  show("players")}
 $("startGame").onclick=startGame;
 
 // ---------- the catch game ----------
