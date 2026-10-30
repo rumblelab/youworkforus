@@ -96,7 +96,7 @@ p{margin:0}
 .hook{font-family:var(--display);font-size:.92rem;letter-spacing:.05em;color:var(--ink);text-transform:uppercase;line-height:1.2;max-width:34ch;text-wrap:balance;
   background:var(--yellow);border:2.5px solid var(--ink);border-radius:6px 9px 5px 8px;box-shadow:3px 3px 0 var(--ink);padding:7px 12px 4px;transform:rotate(-1.5deg)}
 #players .logo{margin-top:2px}
-.tagline{font-weight:900;font-size:1.45rem;line-height:1.12;max-width:19ch;text-wrap:balance;margin-top:-4px}
+.tagline{font-weight:900;font-size:1.45rem;line-height:1.12;max-width:19ch;text-wrap:balance;margin-top:0}
 /* hero: the same night street the game is played on */
 .hero{position:relative;width:100%;height:clamp(226px,60vw,264px);margin-top:4px;overflow:hidden;
   border:3px solid var(--ink);border-radius:22px 26px 20px 24px;box-shadow:4px 5px 0 var(--ink);
@@ -148,7 +148,10 @@ p{margin:0}
 #dodgeList:has(.th:nth-child(11)) .th{width:47px}
 #dodgeList:has(.th:nth-child(19)) .th{width:40px}
 .subline{font-weight:800;font-size:.95rem;color:var(--ink-soft);max-width:34ch;margin-top:2px}
-.howto{font-size:.82rem;color:var(--ink-soft);max-width:38ch;margin-top:-4px}
+.howto{font-size:.9rem;font-weight:700;color:var(--ink-soft);max-width:36ch;margin-top:2px}
+.footlinks{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:.85rem;color:var(--ink-soft);margin-top:-2px}
+.footlinks .linkbtn,.footlinks a{font-size:.85rem;font-weight:800;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;padding:4px 2px}
+.footlinks .sep{opacity:.6}
 #players:not([hidden]) .fall{animation:candyIn .5s cubic-bezier(.3,1.5,.5,1) both;animation-delay:var(--d)}
 #players:not([hidden]) .runner{animation:dashIn .6s cubic-bezier(.2,1.1,.4,1) both}
 @keyframes candyIn{from{transform:translateY(-70px);opacity:0}to{transform:none;opacity:1}}
@@ -280,7 +283,6 @@ p{margin:0}
 
 <!-- START: a tiny landing page. Hook, logo, tagline, the yuck list, one big button. -->
 <section id="players" class="screen">
-  <p class="hook">Halloween is coming. Don't let your kids pick the wrong candy.</p>
   <h1 class="logo">
     <svg viewBox="0 0 640 150" role="img" aria-label="YuckyCandy">
       <defs>
@@ -297,6 +299,7 @@ p{margin:0}
       </g>
     </svg>
   </h1>
+  <p class="hook">Halloween is coming.</p>
   <p class="tagline">Train your kids to bring home the good stuff.</p>
   <div class="hero" aria-hidden="true">
     <div class="moon"></div>
@@ -332,8 +335,8 @@ p{margin:0}
     <div class="yhead"><h3 class="ystamp">Yuck!</h3><p class="ylead">Don't catch these:</p></div>
     <div id="dodgeList" class="thumbs"></div>
   </div>
-  <p class="subline">A free Halloween training game for kids (and selfish parents).</p>
-  <p class="howto">Slide to move the ghost. Catch the good stuff in the bucket. Three yuck candies and the night is over. It keeps getting faster!</p>
+  <p class="howto">Slide to move the ghost. Catch the good stuff, dodge the yucky stuff. Three yucky candies and the night is over.</p>
+  <p class="footlinks"><button class="linkbtn" id="toSetupHome">Customize your yuck list</button><span class="sep" aria-hidden="true">·</span><a href="https://x.com/moochieball" target="_blank" rel="noopener">by @moochieball</a></p>
 </section>
 
 <!-- PLAY -->
@@ -886,6 +889,7 @@ async function copyLink(){
 $("shareBtn").onclick=()=>{if(!listOk()){$("setupHint").hidden=false;return}save("cb.yuck",yuckSlugs);copyLink()};
 $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
+$("toSetupHome").onclick=goSetup;
 
 // ---------- boot ----------
 renderSetup();goPlayers();
