@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Candy Boss</title>
+<!-- Open Graph. Set SITE_URL below (and these two absolute URLs) once the game has a domain; scrapers need absolute image URLs. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Candy Boss">
+<meta property="og:description" content="Train your kids to dodge the nasty candy. Catch the good stuff, dodge the yuck, three strikes and the night is over.">
+<meta property="og:image" content="img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Candy Boss">
+<meta name="twitter:description" content="Train your kids to dodge the nasty candy.">
+<meta name="twitter:image" content="img/og.png">
+<meta name="description" content="Candy Boss: pick the yuck list, then catch the good Halloween candy and dodge the nasties.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
 <style>
 /* Layout: phone-first stack. Night sky, pumpkin accent, candy photos as the visual stars. Single dark theme by choice: it's Halloween night. */
@@ -121,6 +133,79 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 .hs li b{font-variant-numeric:tabular-nums;white-space:nowrap}
 .sharebox{font-family:var(--body);font-weight:700;background:var(--night-2);border-radius:12px;padding:12px;white-space:pre-wrap;word-break:break-word;user-select:all;-webkit-user-select:all}
 .toast{font-weight:800;color:var(--good);min-height:1.4em}
+/* completion screen: a trick-or-treat ticket, built to be screenshotted.
+   Top half = the haul (huge number glowing like a lit pumpkin), perforation, bottom stub = the yuck list. */
+#results{gap:14px}
+.card{--ring:rgba(255,138,43,.55);--glow:rgba(255,138,43,.5);
+  position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;
+  border-radius:24px;padding:0;
+  background:radial-gradient(90% 46% at 50% 40%,rgba(255,138,43,.13),transparent 70%),linear-gradient(180deg,#352862 0%,var(--card) 48%,#231a47 100%);
+  box-shadow:inset 0 0 0 2px var(--ring),0 18px 40px rgba(0,0,0,.45)}
+.card[data-stars="3"]{--ring:rgba(255,216,77,.8);--glow:rgba(255,190,60,.62)}
+.card[data-stars="0"]{--ring:rgba(255,95,122,.5);--glow:rgba(255,95,122,.34)}
+.tk-top,.tk-stub{width:100%;display:flex;flex-direction:column;align-items:center}
+.tk-top{gap:6px;padding:16px 16px 14px}
+.tk-stub{gap:10px;padding:16px 16px 12px;background:rgba(10,6,24,.32)}
+#endReason{color:var(--yuck);font-size:.72rem;letter-spacing:.1em;opacity:.9;max-width:30ch}
+#resultTitle{font-size:1.65rem;color:var(--moon)}
+.card[data-stars="3"] #resultTitle{color:var(--meh)}
+#starRow{font-size:1.75rem;line-height:1;letter-spacing:.14em;color:var(--moon-dim);margin-right:-.14em}
+/* the hero: the number of good candies, flanked by two tilted candies */
+.hero{position:relative;width:100%;display:grid;place-items:center;padding:2px 0 0;isolation:isolate}
+.hero::before{content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(300px,90%);height:150%;transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
+.card .pts{font-family:var(--display);font-weight:700;font-size:clamp(6.5rem,36vw,9.5rem);line-height:.86;color:var(--pumpkin);
+  font-variant-numeric:tabular-nums;letter-spacing:-.03em;text-shadow:0 6px 0 var(--pumpkin-deep),0 10px 26px rgba(0,0,0,.45)}
+.card[data-digits="3"] .pts,.card[data-digits="4"] .pts{font-size:clamp(5rem,25vw,6.75rem)}
+.deco{position:absolute;top:50%;width:clamp(58px,19vw,78px);height:auto;pointer-events:none;filter:drop-shadow(0 5px 6px rgba(0,0,0,.5))}
+.deco.d1{left:0;transform:translateY(-46%) rotate(-17deg)}
+.deco.d2{right:0;transform:translateY(-58%) rotate(14deg)}
+.card[data-digits="3"] .deco,.card[data-digits="4"] .deco{width:52px}
+.spk{position:absolute;font-style:normal;color:var(--meh);line-height:1;pointer-events:none;text-shadow:0 0 10px rgba(255,216,77,.8)}
+.spk.s1{left:27%;top:2%;font-size:1rem}.spk.s2{right:25%;top:62%;font-size:.8rem}.spk.s3{right:29%;top:-4%;font-size:.65rem;opacity:.75}
+.card[data-stars="0"] .spk,.card[data-stars="1"] .spk.s3{display:none}
+#finalLine{font-weight:800;font-size:.95rem;margin-top:6px}
+#bestLine{font-size:.85rem;font-weight:800}
+#bestLine:empty{display:none}
+.card[data-best="new"] #bestLine{color:#2a1a00;background:var(--meh);padding:3px 12px;border-radius:999px;transform:rotate(-2deg);box-shadow:0 3px 0 #c9a227}
+/* four mini-stats in one row */
+.card .stat{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.ms{--k:var(--moon-dim);display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 7px;border-radius:12px;
+  background:rgba(14,9,32,.5);box-shadow:inset 0 3px 0 var(--k)}
+.ms b{font-family:var(--display);font-weight:700;font-size:1.4rem;line-height:1;color:var(--k);font-variant-numeric:tabular-nums}
+.ms span{font-size:.62rem;font-weight:800;line-height:1.1;text-transform:uppercase;letter-spacing:.04em;color:var(--moon-dim)}
+.ms.good{--k:var(--good)}.ms.yuck{--k:var(--yuck)}.ms.dodge{--k:var(--moon)}
+/* perforation, with the two half-moon notches of a ticket */
+.perf{position:relative;width:100%;height:0;border-top:3px dashed rgba(255,243,210,.26)}
+.perf::before,.perf::after{content:"";position:absolute;top:-15px;width:28px;height:28px;border-radius:50%;background:var(--night);box-shadow:inset 0 0 0 2px var(--ring)}
+.perf::before{left:-14px}.perf::after{right:-14px}
+/* stub: slanted YUCK LIST band and the crossed-out candies */
+.yband{display:inline-block;margin:2px 0 4px;transform:rotate(-3deg);background:var(--yuck);color:#2e0712;font-size:.95rem;font-weight:700;letter-spacing:.16em;
+  padding:4px 16px 3px;border-radius:6px;box-shadow:0 3px 0 #b8324b}
+.card .dodgelist{display:grid;grid-template-columns:repeat(auto-fit,minmax(48px,1fr));gap:12px 8px;width:100%;padding-top:4px}
+.card .dodgelist .th{width:100%;max-width:64px;justify-self:center}
+/* a long yuck list: smaller thumbs, names dropped so the card still fits one screen */
+.card .dodgelist:has(.th:nth-child(7)){display:flex;flex-wrap:wrap;justify-content:center;gap:10px 8px}
+.card .dodgelist:has(.th:nth-child(7)) .th{flex:0 0 46px}
+.card .dodgelist:has(.th:nth-child(7)) .cap{display:none}
+.card .dodgelist .cimg{border-radius:12px;padding:3px}
+.card .dodgelist .th .wrapimg::before{border-radius:12px}
+.card .dodgelist .th .wrapimg::after{font-size:.8rem;top:-6px;right:-5px}
+.card .dodgelist .cap{font-size:.6rem;margin:4px -4px 0;overflow-wrap:normal;letter-spacing:-.01em}
+.brand{display:flex;gap:8px;align-items:baseline;justify-content:center;font-family:var(--display);color:var(--moon-dim);font-size:1rem;margin-top:2px}
+.brand .wordmark{color:var(--pumpkin);font-weight:700;letter-spacing:.02em}
+.brand .wordmark::before{content:"🎃 "}
+.brand .domain{font-size:.85rem}
+.brand .domain:empty{display:none}
+/* buttons right under the card: side by side */
+.endbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
+.endbtns .btn,.endbtns .btn.big{font-size:1.1rem;padding:13px 10px;line-height:1.15;width:100%}
+/* entrance: settles in well under a second, no scroll dependency */
+#results:not([hidden]) .card{animation:cardIn .4s cubic-bezier(.2,1.2,.4,1) both}
+#results:not([hidden]) .card .pts{animation:stamp .45s .15s cubic-bezier(.2,1.7,.4,1) both}
+@keyframes cardIn{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes stamp{from{transform:scale(1.6);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#results:not([hidden]) .card,#results:not([hidden]) .card .pts{animation:none}}
 .pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.pop{animation:none}.tile{transition:none}}
@@ -130,15 +215,11 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 <body>
 <div class="wrap">
 
-<!-- START: enter your name, see the yuck list -->
+<!-- START: the yuck list, then play -->
 <section id="players" class="screen">
   <div>
     <p class="eyebrow">Trick or treat</p>
     <h1>Candy Boss</h1>
-  </div>
-  <div class="panel screen" style="gap:12px">
-    <label for="kidName" style="font-weight:800;font-size:1.2rem">Enter your name</label>
-    <input id="kidName" type="text" maxlength="20" placeholder="Your name" autocomplete="off">
   </div>
   <div class="panel dodge">
     <h3 class="yuckhead">YUCK</h3>
@@ -154,7 +235,7 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 <!-- PLAY -->
 <section id="play" class="screen" hidden>
   <div class="hud">
-    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span> <span class="unit">caught</span></div>
+    <div class="score"><small>Caught</small><span id="scoreNum">0</span></div>
     <div style="text-align:center"><span class="lab">Lives</span><div class="lives" id="lives">🎃🎃🎃</div></div>
     <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">0:00</div></div>
   </div>
@@ -169,30 +250,31 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
   </div>
 </section>
 
-<!-- RESULTS + SHARE -->
+<!-- COMPLETION SCREEN: built to be screenshotted. No names, no share button. -->
 <section id="results" class="screen" hidden>
-  <div style="text-align:center">
-    <p class="eyebrow" id="endReason">Three yuck candies. The bag is ruined!</p>
-    <h2 id="resultTitle">Great haul!</h2>
-    <div class="stars" id="starRow">⭐⭐⭐</div>
-    <div class="pts" id="finalPts" style="color:var(--pumpkin)">0</div>
-    <p class="muted" id="finalLine"></p>
-  </div>
-  <div class="panel stat" id="breakdown"></div>
-  <div class="panel screen" style="gap:10px">
-    <p class="eyebrow">Share your score</p>
-    <div class="sharebox" id="shareText"></div>
-    <div class="row">
-      <button class="btn" id="shareBtn">Share</button>
-      <button class="btn ghost" id="copyBtn">Copy</button>
+  <div class="card" id="scorecard" data-stars="2">
+    <div class="tk-top">
+      <p class="eyebrow" id="endReason">Three yuck candies. The bag is ruined!</p>
+      <h2 id="resultTitle">Great haul!</h2>
+      <div class="stars" id="starRow">⭐⭐⭐</div>
+      <div class="hero">
+        <img class="deco d1" id="deco1" alt="" hidden>
+        <img class="deco d2" id="deco2" alt="" hidden>
+        <i class="spk s1" aria-hidden="true">✦</i><i class="spk s2" aria-hidden="true">✦</i><i class="spk s3" aria-hidden="true">✦</i>
+        <div class="pts" id="finalPts">0</div>
+      </div>
+      <p class="muted" id="finalLine"></p>
+      <p class="muted" id="bestLine"></p>
+      <div class="stat" id="breakdown"></div>
     </div>
-    <div class="toast" id="toast"></div>
+    <div class="perf" aria-hidden="true"></div>
+    <div class="tk-stub">
+      <p class="eyebrow yband">The yuck list</p>
+      <div id="dodgeList2" class="thumbs dodgelist"></div>
+      <p class="brand"><span class="wordmark">Candy Boss</span><span class="domain" id="siteDomain"></span></p>
+    </div>
   </div>
-  <div class="panel">
-    <p class="eyebrow">Top scores</p>
-    <ol class="hs" id="hsList" style="margin-top:8px"></ol>
-  </div>
-  <div class="row">
+  <div class="row endbtns">
     <button class="btn big" id="again">Play again 🎃</button>
     <button class="btn ghost" id="toSetup2">Change the yuck list</button>
   </div>
@@ -214,6 +296,16 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
     <button class="linkbtn" id="resetRanks">Reset to house rules</button>
   </div>
   <p id="setupHint" class="muted" hidden>You need at least one Yuck candy and at least one Yum candy.</p>
+  <div class="panel screen" style="gap:10px">
+    <p class="eyebrow">Share this game with your yuck list</p>
+    <p class="muted" style="font-size:.95rem">Anyone who opens this link plays with the yuck list above.</p>
+    <div class="sharebox" id="shareLink"></div>
+    <div class="row">
+      <button class="btn" id="shareBtn">Share link</button>
+      <button class="btn ghost" id="copyBtn">Copy link</button>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
 </section>
 
 </div>
@@ -253,9 +345,13 @@ const MAX_LIVES=3;
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let yuckSlugs=Array.isArray(load("cb.yuck",null))?[...new Set(load("cb.yuck",[]).filter(s=>BY_SLUG[s]))]:null;
-const hadSaved=!!yuckSlugs&&yuckSlugs.length>=1&&yuckSlugs.length<CANDIES.length;
-if(!hadSaved)yuckSlugs=DEFAULT_YUCK.slice();
-let scores=load("cb.scores3",[]);   // [{name,score,secs,date}] score = good candies caught, secs = how long they lasted
+if(!(yuckSlugs&&yuckSlugs.length>=1&&yuckSlugs.length<CANDIES.length))yuckSlugs=DEFAULT_YUCK.slice();
+let best=load("cb.best",{score:0,secs:0});   // personal best on this device: good candies caught, and how long they lasted
+// SITE_URL: the game's public address once it has one, e.g. "https://candyboss.example". Empty means "use wherever this page is".
+const SITE_URL="";
+// a shared link carries the yuck list: ?yuck=almond-joy,mounds,...
+(()=>{try{const q=new URLSearchParams(location.search).get("yuck");if(q){const list=[...new Set(q.split(",").map(x=>x.trim()).filter(x=>BY_SLUG[x]))];
+  if(list.length>=1&&list.length<CANDIES.length){yuckSlugs=list;save("cb.yuck",list)}}}catch(e){}})();
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
@@ -319,6 +415,7 @@ function renderSetup(){
   fill($("yuckGrid"),yucks(),"Nothing here. Slide a candy over.");
   fill($("goodGrid"),goods(),"Nothing here. Slide a candy over.");
   $("yuckCount").textContent=yucks().length;$("goodCount").textContent=goods().length;
+  renderShareLink();
 }
 // tap moves a candy across; a real drag (finger or mouse) drops it on either column
 (()=>{
@@ -345,6 +442,11 @@ function renderSetup(){
   ed.addEventListener("pointerup",finish);ed.addEventListener("pointercancel",finish);
 })();
 $("resetRanks").onclick=()=>{yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup()};
+function gameLink(){
+  const base=SITE_URL||(location.origin&&location.origin!=="null"?location.origin+location.pathname:location.href.split(/[?#]/)[0]);
+  return `${base}?yuck=${yuckSlugs.join(",")}`;
+}
+function renderShareLink(){$("shareLink").textContent=gameLink();$("toast").textContent=""}
 $("toPlayers").onclick=()=>{
   if(!listOk()){$("setupHint").hidden=false;return}
   $("setupHint").hidden=true;save("cb.yuck",yuckSlugs);goPlayers();
@@ -353,9 +455,7 @@ function goSetup(){renderSetup();show("setup")}
 
 // ---------- start screen ----------
 function goPlayers(){fillThumbs($("dodgeList"),yucks());show("players")}
-$("kidName").value=load("cb.lastName","");
 $("startGame").onclick=startGame;
-$("kidName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
 
 // ---------- screen 3: the catch game ----------
 const stage=$("stage"), cv=$("cv"), ctx=cv.getContext("2d");
@@ -364,19 +464,16 @@ function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=stage.clientWidth
 window.addEventListener("resize",()=>{if(G&&G.running)resize()});
 
 let G=null, raf=0, lastT=0;
-// bucket art: img/bucket*.png (768x512). RIM is where candy drops in, as a fraction of the image height; BODY is how much of the width the pail spans.
-const BUCKET={w:96,h:54,aspect:512/768,rim:0.36,body:0.77};
-const BIMG={};["bucket","bucket-hit","bucket-yay"].forEach(k=>{const im=new Image();im.onload=()=>{im._ok=im.naturalWidth>0};im.onerror=()=>{im._ok=false};im.src=`img/${k}.png`;BIMG[k]=im});
+const BUCKET={w:96,h:54};
 const SPEEDUP_EVERY=20;   // seconds between "FASTER!" callouts
 function startGame(){
   if(!listOk()){yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs)}
-  const name=($("kidName").value.trim()||"Trick-or-treater").slice(0,20);save("cb.lastName",name);
   show("play");resize();
-  G={name,lives:MAX_LIVES,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.round(Math.max(96,Math.min(132,W*.3))),
+  G={lives:MAX_LIVES,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.min(BUCKET.w,W*.28),
      items:[],floaters:[],spawnIn:0.4,lastX:-999,goodCaught:0,goodMissed:0,yuckCaught:0,yuckDodged:0,dodged:{},
-     running:false,over:false,shakeT:0,hitT:0,yayT:0,calloutT:0,nextCallout:SPEEDUP_EVERY,keys:{}};
+     running:false,over:false,shakeT:0,calloutT:0,nextCallout:SPEEDUP_EVERY,keys:{}};
   const me=G, alive=()=>G===me;
-  $("whoPlays").textContent=name;updateHud();
+  updateHud();
   // 3-2-1 countdown, then go (guarded so quitting mid-countdown cannot start a stale game)
   const cd=$("countdown"), num=cd.querySelector(".count");cd.hidden=false;$("paused").hidden=true;
   let n=3;num.textContent=n;
@@ -419,29 +516,28 @@ function loop(now){
   // spawn
   G.spawnIn-=dt;if(G.spawnIn<=0){spawn();G.spawnIn=spawnGap()}
   // items
-  const bh=bucketImgOk()?G.bucketW*BUCKET.aspect:BUCKET.h, bucketTop=H-bh-10;
-  const rim=bucketImgOk()?bucketTop+bh*BUCKET.rim:bucketTop, half=G.bucketW*(bucketImgOk()?BUCKET.body:1)/2, bl=G.bx-half, br=G.bx+half;
+  const bucketTop=H-BUCKET.h-14, bl=G.bx-G.bucketW/2, br=G.bx+G.bucketW/2;
   for(const it of G.items){
     it.y+=it.vy*dt;it.x=Math.max(it.w/2,Math.min(W-it.w/2,it.x+it.drift*dt));it.t+=dt;it.rot=it.rot0+Math.sin(it.t*2.2)*.3;
-    if(!it.done&&it.y+it.h*.35>=rim&&it.y-it.h/2<rim+36&&it.x>bl+4&&it.x<br-4){it.done=true;catchIt(it);if(G.over)return}
+    if(!it.done&&it.y+it.h*.35>=bucketTop&&it.y-it.h/2<bucketTop+BUCKET.h&&it.x>bl+4&&it.x<br-4){it.done=true;catchIt(it);if(G.over)return}
     else if(!it.done&&it.y-it.h/2>H){it.done=true;if(it.yuck){G.yuckDodged++;G.dodged[it.c.name]=1}else G.goodMissed++}
   }
   G.items=G.items.filter(i=>!i.done);
   for(const f of G.floaters){f.y-=60*dt;f.t-=dt}
   G.floaters=G.floaters.filter(f=>f.t>0);
-  if(G.shakeT>0)G.shakeT-=dt;if(G.hitT>0)G.hitT-=dt;if(G.yayT>0)G.yayT-=dt;
+  if(G.shakeT>0)G.shakeT-=dt;
   updateHud();draw(bucketTop);
   raf=requestAnimationFrame(loop);
 }
 function catchIt(it){
   if(it.yuck){
-    G.yuckCaught++;G.lives--;G.shakeT=0.35;G.hitT=0.5;G.yayT=0;
+    G.yuckCaught++;G.lives--;G.shakeT=0.35;
     G.floaters.push({x:it.x,y:it.y-20,t:1.1,text:"YUCK!",color:"#ff5f7a",big:true});
     beep("yuck");
     if(navigator.vibrate){try{navigator.vibrate(80)}catch(e){}}
     if(G.lives<=0)endGame();
   }else{
-    G.goodCaught++;G.yayT=0.35;
+    G.goodCaught++;
     G.floaters.push({x:it.x,y:it.y-20,t:0.9,text:"+1",color:"#8ef05a"});
     beep("good");
   }
@@ -493,19 +589,8 @@ function drawCandy(it){
   ctx.fillText(it.c.name,0,1);
   ctx.restore();
 }
-const bucketImgOk=()=>imgOk(BIMG.bucket);
 function drawBucket(x,top){
-  const w=G.bucketW;
-  if(bucketImgOk()){
-    let im=BIMG.bucket;
-    if(G.hitT>0&&imgOk(BIMG["bucket-hit"]))im=BIMG["bucket-hit"];
-    else if(G.yayT>0&&imgOk(BIMG["bucket-yay"]))im=BIMG["bucket-yay"];
-    const h=w*BUCKET.aspect, squash=G.yayT>0?1+G.yayT*.25:1;
-    ctx.save();ctx.translate(x,top+h);ctx.scale(2-squash,squash);
-    ctx.shadowColor="rgba(0,0,0,.5)";ctx.shadowBlur=12;ctx.shadowOffsetY=4;
-    ctx.drawImage(im,-w/2,-h,w,h);ctx.restore();return;
-  }
-  const h=BUCKET.h;
+  const w=G.bucketW,h=BUCKET.h;
   ctx.save();ctx.translate(x,top);
   // handle
   ctx.strokeStyle="#3a2a1a";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,6,w*.42,Math.PI*1.05,Math.PI*1.95);ctx.stroke();
@@ -537,7 +622,7 @@ $("resume").onclick=()=>{if(!G||G.over)return;$("paused").hidden=true;G.running=
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
 $("quit").onclick=()=>{if(G){G.running=false;cancelAnimationFrame(raf);G=null}goPlayers()};
 
-// ---------- screen 4: results + share ----------
+// ---------- completion screen ----------
 function endGame(){
   if(G.over)return;
   G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");$("paused").hidden=true;
@@ -546,26 +631,31 @@ function endGame(){
   $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the yuck list!";
   $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
   $("finalPts").textContent=good;
-  $("finalLine").textContent=`good ${plural(good,"candy","candies")} caught. ${G.name} lasted ${played} seconds.`;
-  $("breakdown").innerHTML=`<span>✅ Good caught</span><b>${good}</b><span>Good missed</span><b>${G.goodMissed}</b><span>❌ Yuck caught</span><b>${yuck}</b><span>Yuck dodged</span><b>${G.yuckDodged}</b>`;
-  const dodgedNames=Object.keys(G.dodged);
-  const text=`🎃 Candy Boss: ${G.name} caught ${good} good ${plural(good,"candy","candies")} and lasted ${played}s before the third yuck candy${dodgedNames.length?` (dodged ${G.yuckDodged} ${plural(G.yuckDodged,"nasty","nasties")} like ${pick(dodgedNames)})`:""}.${stars?" "+"⭐".repeat(stars):""} Can you beat it? 🍬`;
-  $("shareText").textContent=text;$("toast").textContent="";
-  scores.push({name:G.name,score:good,secs:played,date:new Date().toISOString().slice(0,10)});
-  scores.sort((a,b)=>b.score-a.score||b.secs-a.secs);scores=scores.slice(0,8);save("cb.scores3",scores);
-  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· lasted ${s.secs}s</small></span><b>${s.score} caught</b></li>`).join("");
+  $("finalLine").textContent=`good ${plural(good,"candy","candies")} caught in ${played} seconds`;
+  const isBest=good>best.score||(good===best.score&&played>best.secs);
+  if(isBest){best={score:good,secs:played};save("cb.best",best)}
+  $("bestLine").textContent=isBest&&good>0?"🏆 New personal best!":best.score>0?`Personal best: ${best.score} caught`:"";
+  $("breakdown").innerHTML=[["good","Good caught",good],["","Good missed",G.goodMissed],["yuck","Yuck caught",yuck],["dodge","Yuck dodged",G.yuckDodged]]
+    .map(([k,label,v])=>`<div class="ms ${k}"><b>${v}</b><span>${label}</span></div>`).join("");
+  fillThumbs($("dodgeList2"),yucks());
+  // scorecard hooks for the CSS (rating, new best, digit count), plus two good candies tilted beside the big number
+  const card=$("scorecard");card.dataset.stars=stars;card.dataset.best=isBest&&good>0?"new":"";card.dataset.digits=String(good).length;
+  const deco=[...["reeses","kit-kat","snickers","twix","skittles","starburst"].map(s=>BY_SLUG[s]),...CANDIES].filter((c,i,a)=>!isYuck(c)&&a.indexOf(c)===i).slice(0,2);
+  ["deco1","deco2"].forEach((id,i)=>{const im=$(id),c=deco[i];im.hidden=!c;if(c){im.onerror=()=>{im.hidden=true};im.src=imgSrc(c)}});
+  $("siteDomain").textContent=SITE_URL.replace(/^https?:\/\//,"");
   show("results");
 }
-async function copyText(){
-  const text=$("shareText").textContent;
-  try{await navigator.clipboard.writeText(text);$("toast").textContent="Copied! Paste it anywhere.";}
-  catch(e){const r=document.createRange();r.selectNodeContents($("shareText"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("toast").textContent="Text selected. Press copy on your device."}
+// share the game link (from the yuck list editor)
+async function copyLink(){
+  const text=gameLink();
+  try{await navigator.clipboard.writeText(text);$("toast").textContent="Link copied!";}
+  catch(e){const r=document.createRange();r.selectNodeContents($("shareLink"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);$("toast").textContent="Link selected. Press copy on your device."}
 }
-$("copyBtn").onclick=copyText;
+$("copyBtn").onclick=copyLink;
 $("shareBtn").onclick=async()=>{
-  const text=$("shareText").textContent;
-  if(navigator.share){try{await navigator.share({title:"Candy Boss",text});$("toast").textContent="Shared!";return}catch(e){if(e&&e.name==="AbortError")return}}
-  copyText();
+  const url=gameLink();
+  if(navigator.share){try{await navigator.share({title:"Candy Boss",text:"Think you can dodge my yuck list? 🎃",url});$("toast").textContent="Shared!";return}catch(e){if(e&&e.name==="AbortError")return}}
+  copyLink();
 };
 $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
