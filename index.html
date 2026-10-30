@@ -413,7 +413,7 @@ function endGame(reason){
   G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");
   const secs=gameSecs, played=Math.round(G.elapsed);
   const favsCaught=G.caught.fav, pct=favsCaught/Math.max(1,favsCaught+G.missedFav);
-  const stars=G.lives>0&&pct>=.75?3:pct>=.5?2:pct>=.25?1:0;
+  const stars=G.score<=0?0:(G.lives>0&&pct>=.6&&G.score>=secs*2.5)?3:G.score>=secs*1.2?2:1;
   $("endReason").textContent=reason==="time"?"Time's up!":"Too many yuck candies!";
   $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the favorites!";
   $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
