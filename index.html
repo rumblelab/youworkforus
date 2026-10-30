@@ -7,7 +7,7 @@
 <title>Candy Boss</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
 <style>
-/* Layout: phone-first stack. Night sky, pumpkin accent, candy wrappers as the visual stars. Single dark theme by choice: it's Halloween night. */
+/* Layout: phone-first stack. Night sky, pumpkin accent, candy photos as the visual stars. Single dark theme by choice: it's Halloween night. */
 :root{
   --night:#17102e; --night-2:#241a44; --moon:#fff3d2; --moon-dim:#c9bfdf;
   --pumpkin:#ff8a2b; --pumpkin-deep:#d9651a;
@@ -30,6 +30,7 @@ body{margin:0;background:var(--night);color:var(--moon);font-family:var(--body);
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1}
 h1{font-size:2.6rem;color:var(--pumpkin);letter-spacing:.01em}
 h2{font-size:1.7rem}
+h3{font-size:1.25rem}
 p{margin:0}
 .muted{color:var(--moon-dim)}
 .eyebrow{font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--pumpkin)}
@@ -37,42 +38,59 @@ p{margin:0}
 .btn{font-family:var(--display);font-size:1.25rem;font-weight:600;border:0;border-radius:999px;padding:14px 26px;cursor:pointer;
   background:var(--pumpkin);color:#2a1300;box-shadow:0 5px 0 var(--pumpkin-deep);transition:transform .08s}
 .btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--pumpkin-deep)}
-.btn:focus-visible,.candy:focus-visible,.chip:focus-visible,input:focus-visible{outline:3px solid var(--moon);outline-offset:3px}
+.btn:focus-visible,.tile:focus-visible,.chip:focus-visible,.linkbtn:focus-visible,input:focus-visible{outline:3px solid var(--moon);outline-offset:3px}
 .btn.ghost{background:transparent;color:var(--moon);box-shadow:inset 0 0 0 2px var(--line)}
-.btn.big{font-size:1.6rem;padding:18px 34px}
+.btn.big{font-size:1.6rem;padding:18px 34px;text-wrap:balance;max-width:100%}
+@media (max-width:480px){.btn.big{font-size:1.3rem;padding:16px 24px}}
+.linkbtn{font:inherit;font-weight:800;background:none;border:0;color:var(--moon-dim);text-decoration:underline;cursor:pointer;padding:8px 4px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
 input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:var(--night-2);color:var(--moon);width:100%}
 .chip{font-family:var(--display);font-size:1rem;border:2px solid var(--line);background:var(--night-2);color:var(--moon);border-radius:999px;padding:8px 16px;cursor:pointer}
 .chip[aria-pressed=true]{background:var(--moon);color:var(--night);border-color:var(--moon)}
 
-/* candy wrappers (setup grid) */
-.candy{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;border:0;cursor:pointer;
-  font-family:var(--display);font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);
-  padding:14px 22px;min-height:64px;border-radius:10px;background:var(--c,#888);
-  box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),inset 0 4px 0 rgba(255,255,255,.22),0 4px 10px rgba(0,0,0,.35);
-  transition:transform .12s}
-.candy::before,.candy::after{content:"";position:absolute;top:18%;bottom:18%;width:14px;background:var(--c,#888);
-  clip-path:polygon(0 50%,100% 0,100% 100%);filter:brightness(.8)}
-.candy::before{left:-12px;transform:scaleX(-1)}
-.candy::after{right:-12px}
-.candy:hover{transform:scale(1.04)}
-.candy .lbl{font-size:1.05rem;line-height:1.15}
-.candy .tag{position:absolute;top:-10px;right:-6px;font-size:1.4rem;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
-.candy.fav{outline:3px solid var(--good)}
-.candy.yuck{outline:3px solid var(--yuck);opacity:.75}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px 26px;padding-inline:12px}
+/* candy pictures: every candy is an <img> on its own wrapper color */
+.cimg{display:block;width:100%;aspect-ratio:1;object-fit:contain;padding:4px;border-radius:14px;background:var(--c,#888);
+  box-shadow:inset 0 -5px 0 rgba(0,0,0,.18),0 3px 8px rgba(0,0,0,.35)}
+.cap{display:block;margin-top:5px;font-size:.78rem;font-weight:800;line-height:1.15;text-align:center;color:var(--moon);overflow-wrap:anywhere}
 
-/* legend */
-.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
-.legend div{border-radius:12px;padding:8px 4px;background:var(--night-2);font-weight:800}
-.legend .g{color:var(--good)}.legend .m{color:var(--meh)}.legend .y{color:var(--yuck)}
+/* screen 1: tappable tiles */
+.sechead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sechead.y h3{color:var(--yuck)}
+.sechead.g h3{color:var(--good)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:14px 12px}
+.tile{font-family:var(--body);color:var(--moon);background:none;border:0;padding:0;cursor:pointer;display:block;text-align:center;transition:transform .12s}
+.tile:hover{transform:scale(1.05)}
+.tile:active{transform:scale(.97)}
+.tile.yuck .cimg{box-shadow:0 0 0 3px var(--yuck),0 3px 8px rgba(0,0,0,.35)}
+.tile.yuck .cap{color:var(--yuck)}
+.empty{grid-column:1/-1;color:var(--moon-dim);font-weight:700}
+
+/* screen 2: study sheet */
+.compare{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.compare .panel{padding:14px}
+.compare h3{margin-bottom:12px;font-size:1.5rem}
+.compare .catch h3{color:var(--good)}
+.compare .dodge h3{color:var(--yuck)}
+.compare .catch{border-color:rgba(142,240,90,.45)}
+.compare .dodge{border-color:rgba(255,95,122,.55)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:10px}
+.th{position:relative}
+.th .wrapimg{position:relative}
+.dodge .th .cimg,.dodgelist .th .cimg{box-shadow:0 0 0 3px var(--yuck),0 3px 8px rgba(0,0,0,.35);filter:saturate(.7)}
+.dodge .th .wrapimg::before,.dodgelist .th .wrapimg::before{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;z-index:1;
+  background:linear-gradient(to top right,transparent calc(50% - 2px),rgba(255,95,122,.95) calc(50% - 2px),rgba(255,95,122,.95) calc(50% + 2px),transparent calc(50% + 2px)),rgba(255,95,122,.16)}
+.dodge .th .wrapimg::after,.dodgelist .th .wrapimg::after{content:"❌";position:absolute;top:-8px;right:-6px;z-index:2;font-size:1.15rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.dodge .th .cap,.dodgelist .th .cap{color:var(--yuck);text-decoration:line-through}
+@media (max-width:560px){.compare{grid-template-columns:1fr}}
 
 /* play */
 #play{gap:10px}
 .hud{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--display)}
 .score{font-size:2rem;color:var(--moon);font-variant-numeric:tabular-nums;line-height:1}
+.score .unit{font-size:1rem;color:var(--moon-dim)}
 .score small,.hud .lab{font-size:.8rem;color:var(--moon-dim);display:block;line-height:1;margin-bottom:4px}
+.score small{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .timer{font-size:1.8rem;font-variant-numeric:tabular-nums;line-height:1}
 .timer.low{color:var(--yuck)}
 .lives{font-size:1.5rem;letter-spacing:.05em;line-height:1}
@@ -82,82 +100,82 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
   background:rgba(23,16,46,.78);padding:20px}
 .overlay .count{font-family:var(--display);font-size:6rem;color:var(--pumpkin);line-height:1}
-.bag{display:flex;flex-wrap:wrap;gap:6px}
-.bag span{font-size:.85rem;font-weight:800;padding:4px 10px;border-radius:999px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);background:var(--c)}
-.pts{font-family:var(--display);font-size:3rem;line-height:1}
+.pts{font-family:var(--display);font-size:3.6rem;line-height:1}
 .stars{font-size:2.4rem;letter-spacing:.1em}
 .stat{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-weight:700}
 .stat b{font-variant-numeric:tabular-nums;text-align:right}
 .hs{list-style:none;padding:0;margin:0;display:grid;gap:6px}
-.hs li{display:flex;justify-content:space-between;padding:8px 12px;background:var(--night-2);border-radius:10px;font-weight:700}
-.hs li b{font-variant-numeric:tabular-nums}
+.hs li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;background:var(--night-2);border-radius:10px;font-weight:700}
+.hs li span{min-width:0;overflow-wrap:anywhere}
+.hs li b{font-variant-numeric:tabular-nums;white-space:nowrap}
 .sharebox{font-family:var(--body);font-weight:700;background:var(--night-2);border-radius:12px;padding:12px;white-space:pre-wrap;word-break:break-word;user-select:all;-webkit-user-select:all}
 .toast{font-weight:800;color:var(--good);min-height:1.4em}
 .pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-@media (prefers-reduced-motion:reduce){.pop{animation:none}.candy{transition:none}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.tile{transition:none}}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- STEP 1: the parent ranks the candy -->
+<!-- SCREEN 1: the parent sets the yuck list -->
 <section id="setup" class="screen">
   <div>
-    <p class="eyebrow">Step 1 · Parent setup</p>
+    <p class="eyebrow">The house rules</p>
     <h1>Candy Boss</h1>
-    <p class="muted">Tap each candy to rank it. Candy will rain from the sky, and your kids score by catching what <em>you</em> love and dodging what you don't.</p>
+    <h2 style="margin-top:6px">The yuck list</h2>
+    <p class="muted" style="margin-top:8px">We're opinionated. These five are the nasties. Toss in a couple more if you must.</p>
   </div>
-  <div class="legend">
-    <div class="g">⭐ Catch it<br>+10</div>
-    <div class="m">Okay<br>+2</div>
-    <div class="y">❌ Dodge it<br>−5 &amp; lose a life</div>
+  <div class="panel">
+    <div class="sechead y"><h3>Yuck</h3><span class="muted" id="yuckCount"></span></div>
+    <div id="yuckGrid" class="tiles"></div>
   </div>
-  <p class="muted" style="font-size:.95rem">Tap once for ⭐ favorite, again for ❌ yuck, again to clear.</p>
-  <div id="rankGrid" class="grid"></div>
+  <div class="panel">
+    <div class="sechead g"><h3>Good</h3><span class="muted" id="goodCount"></span></div>
+    <div id="goodGrid" class="tiles"></div>
+  </div>
+  <p class="muted" style="font-size:.95rem">Tap any candy to move it between Good and Yuck.</p>
   <div class="row">
-    <button class="btn big" id="toPlayers">Let the kids play →</button>
-    <button class="btn ghost" id="resetRanks">Clear all</button>
+    <button class="btn big" id="toPlayers">Show the kids →</button>
+    <button class="linkbtn" id="resetRanks">Reset to house rules</button>
   </div>
-  <p id="setupHint" class="muted" hidden>Pick at least one ⭐ favorite and one ❌ yuck candy first.</p>
+  <p id="setupHint" class="muted" hidden>You need at least one Yuck candy and at least one Good candy.</p>
 </section>
 
-<!-- STEP 2a: who is playing -->
+<!-- SCREEN 2: the kid studies up -->
 <section id="players" class="screen" hidden>
   <div>
-    <p class="eyebrow">Step 2 · Catch the candy</p>
-    <h2>Grab your bucket</h2>
+    <p class="eyebrow">Study up</p>
+    <h2>Know your candy before you play</h2>
   </div>
-  <div class="panel screen">
+  <div class="compare">
+    <div class="panel catch"><h3>CATCH these</h3><div id="catchList" class="thumbs"></div></div>
+    <div class="panel dodge"><h3>DODGE these</h3><div id="dodgeList" class="thumbs"></div></div>
+  </div>
+  <div class="panel screen" style="gap:12px">
     <label for="kidName" style="font-weight:800">Your name</label>
     <input id="kidName" type="text" maxlength="20" placeholder="Type your name" autocomplete="off">
     <div style="font-weight:800">How long?</div>
     <div class="row" id="timeChips">
       <button class="chip" data-n="30" aria-pressed="false">30 seconds</button>
-      <button class="chip" data-n="60" aria-pressed="true">60 seconds</button>
-      <button class="chip" data-n="90" aria-pressed="false">90 seconds</button>
-    </div>
-    <div class="panel" style="background:var(--night-2)">
-      <p class="eyebrow">Catch these</p>
-      <div id="favList" class="bag" style="margin-top:8px"></div>
-      <p class="eyebrow" style="margin-top:12px;color:var(--yuck)">Dodge these</p>
-      <div id="yuckList" class="bag" style="margin-top:8px"></div>
+      <button class="chip" data-n="45" aria-pressed="true">45 seconds</button>
+      <button class="chip" data-n="60" aria-pressed="false">60 seconds</button>
     </div>
     <p class="muted" style="font-size:.95rem">Slide your finger (or the mouse) to move the bucket. Arrow keys work too. Catch 3 yuck candies and the night is over!</p>
   </div>
   <div class="row">
-    <button class="btn big" id="startGame">Start catching! 🎃</button>
-    <button class="btn ghost" id="backToSetup">Parent setup</button>
+    <button class="btn big" id="startGame">I'm ready. Trick or treat! 🎃</button>
+    <button class="btn ghost" id="backToSetup">Change the yuck list</button>
   </div>
 </section>
 
-<!-- STEP 2b: the catch game -->
+<!-- SCREEN 3: the catch game -->
 <section id="play" class="screen" hidden>
   <div class="hud">
-    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span></div>
+    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span> <span class="unit">caught</span></div>
     <div style="text-align:center"><span class="lab">Lives</span><div class="lives" id="lives">🎃🎃🎃</div></div>
-    <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">60</div></div>
+    <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">45</div></div>
   </div>
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
@@ -170,7 +188,7 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
   </div>
 </section>
 
-<!-- RESULTS + SHARE -->
+<!-- SCREEN 4: results + share -->
 <section id="results" class="screen" hidden>
   <div style="text-align:center">
     <p class="eyebrow" id="endReason">Time's up!</p>
@@ -190,94 +208,140 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
     <div class="toast" id="toast"></div>
   </div>
   <div class="panel">
-    <p class="eyebrow">Next time, catch these</p>
-    <div id="favList2" class="bag" style="margin-top:8px"></div>
+    <p class="eyebrow" style="color:var(--yuck)">Dodge list</p>
+    <div id="dodgeList2" class="thumbs dodgelist" style="margin-top:10px"></div>
   </div>
   <div class="panel">
-    <p class="eyebrow">Top candy catchers</p>
+    <p class="eyebrow">Top scores</p>
     <ol class="hs" id="hsList" style="margin-top:8px"></ol>
   </div>
   <div class="row">
     <button class="btn big" id="again">Play again 🎃</button>
-    <button class="btn ghost" id="toSetup2">Parent setup</button>
+    <button class="btn ghost" id="toSetup2">Change the yuck list</button>
   </div>
 </section>
 
 </div>
 
 <script>
-// ---------- data ----------
+// ---------- data (inlined from img/manifest.json so the page works from file://) ----------
 const CANDIES = [
-  ["Reese's Cups","#e36a1c"],["Snickers","#6b3e17"],["Kit Kat","#c8102e"],["Twix","#c9a227"],
-  ["M&M's","#7a3b1f"],["Peanut M&M's","#e8b100"],["Milky Way","#3b6d2f"],["3 Musketeers","#5b6c8f"],
-  ["Hershey's Bar","#5a3222"],["Butterfinger","#f2a600"],["Almond Joy","#1f6fb2"],["Mounds","#b4262d"],
-  ["Skittles","#d12b2b"],["Starburst","#e8336d"],["Sour Patch Kids","#2faf5a"],["Nerds","#9b3bd1"],
-  ["Swedish Fish","#d6202d"],["Twizzlers","#b3121b"],["Tootsie Roll","#4a2a1b"],["Candy Corn","#ff9f1c"],
-  ["Smarties","#d78bd9"],["Jolly Rancher","#1c9fd8"],["Dum Dums","#f04e98"],["Laffy Taffy","#8bc34a"],
-  ["Airheads","#36b3e8"],["Whoppers","#8a3a2a"],["York Peppermint","#2c2c2c"],["Crunch Bar","#2b63c9"],
-  ["Dots","#e8571f"],["Hot Tamales","#c6181f"],["Junior Mints","#1aa37a"],["Raisins (really?)","#6d1a7a"]
-].map(([name,c])=>({name,c}));
-const POINTS={fav:10,ok:2,yuck:-5};
+  {"slug":"almond-joy","name":"Almond Joy","yuck":true,"color":"#1f6fb2"},
+  {"slug":"mounds","name":"Mounds","yuck":true,"color":"#b4262d"},
+  {"slug":"tootsie-roll","name":"Tootsie Roll","yuck":true,"color":"#4a2a1b"},
+  {"slug":"junior-mints","name":"Junior Mints","yuck":true,"color":"#1aa37a"},
+  {"slug":"butterfinger","name":"Butterfinger","yuck":true,"color":"#f2a600"},
+  {"slug":"reeses","name":"Reese's Cups","yuck":false,"color":"#e36a1c"},
+  {"slug":"snickers","name":"Snickers","yuck":false,"color":"#6b3e17"},
+  {"slug":"kit-kat","name":"Kit Kat","yuck":false,"color":"#c8102e"},
+  {"slug":"twix","name":"Twix","yuck":false,"color":"#c9a227"},
+  {"slug":"mms","name":"M&M's","yuck":false,"color":"#7a3b1f"},
+  {"slug":"peanut-mms","name":"Peanut M&M's","yuck":false,"color":"#e8b100"},
+  {"slug":"milky-way","name":"Milky Way","yuck":false,"color":"#3b6d2f"},
+  {"slug":"three-musketeers","name":"3 Musketeers","yuck":false,"color":"#5b6c8f"},
+  {"slug":"hersheys","name":"Hershey's Bar","yuck":false,"color":"#5a3222"},
+  {"slug":"skittles","name":"Skittles","yuck":false,"color":"#d12b2b"},
+  {"slug":"starburst","name":"Starburst","yuck":false,"color":"#e8336d"},
+  {"slug":"sour-patch-kids","name":"Sour Patch Kids","yuck":false,"color":"#2faf5a"},
+  {"slug":"nerds","name":"Nerds","yuck":false,"color":"#9b3bd1"},
+  {"slug":"swedish-fish","name":"Swedish Fish","yuck":false,"color":"#d6202d"},
+  {"slug":"twizzlers","name":"Twizzlers","yuck":false,"color":"#b3121b"},
+  {"slug":"jolly-rancher","name":"Jolly Rancher","yuck":false,"color":"#1c9fd8"},
+  {"slug":"airheads","name":"Airheads","yuck":false,"color":"#36b3e8"},
+  {"slug":"crunch","name":"Crunch Bar","yuck":false,"color":"#2b63c9"}
+];
+const BY_SLUG = Object.fromEntries(CANDIES.map(c=>[c.slug,c]));
+const DEFAULT_YUCK = CANDIES.filter(c=>c.yuck).map(c=>c.slug);
 const MAX_LIVES=3;
 
 // ---------- storage ----------
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let ranks=load("cb.ranks",{});       // name -> "fav" | "yuck"
-let scores=load("cb.scores",[]);     // [{name,score,secs,date}]
-let gameSecs=60;
+let yuckSlugs=Array.isArray(load("cb.yuck",null))?[...new Set(load("cb.yuck",[]).filter(s=>BY_SLUG[s]))]:null;
+const hadSaved=!!yuckSlugs&&yuckSlugs.length>=1&&yuckSlugs.length<CANDIES.length;
+if(!hadSaved)yuckSlugs=DEFAULT_YUCK.slice();
+let scores=load("cb.scores2",[]);   // [{name,score,secs,date}] score = good candies caught
+let gameSecs=45;
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
-const rankOf=n=>ranks[n]||"ok";
-const byRank=r=>CANDIES.filter(c=>rankOf(c.name)===r);
+const isYuck=c=>yuckSlugs.includes(c.slug);
+const yucks=()=>CANDIES.filter(isYuck);
+const goods=()=>CANDIES.filter(c=>!isYuck(c));
+const listOk=()=>yucks().length>=1&&goods().length>=1;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 function show(id){["setup","players","play","results"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
-function candyEl(c,extra=""){const b=document.createElement("button");b.className="candy "+extra;b.style.setProperty("--c",c.c);b.innerHTML=`<span class="lbl">${c.name}</span>`;return b}
-function pill(c){const s=document.createElement("span");s.style.setProperty("--c",c.c);s.textContent=c.name;return s}
-function fillList(el,list){el.innerHTML="";list.forEach(c=>el.appendChild(pill(c)))}
-const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const plural=(n,one,many)=>n===1?one:many;
+
+// ---------- candy images ----------
+const imgSrc=c=>`img/${c.slug}.png`;
+const BLANK="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";   // 1px transparent: a missing photo leaves just the colored tile
+const IMGS={};          // slug -> Image, preloaded at startup for the canvas
+CANDIES.forEach(c=>{const im=new Image();im.onload=()=>{im._ok=im.naturalWidth>0};im.onerror=()=>{im._ok=false};im.src=imgSrc(c);IMGS[c.slug]=im});
+const imgOk=im=>!!im&&im.complete&&im.naturalWidth>0&&im._ok!==false;
+// DOM <img> for tiles; if the file is missing the colored box and the name label still show
+function candyImg(c){
+  const im=document.createElement("img");im.className="cimg";im.alt="";im.draggable=false;im.style.setProperty("--c",c.color);
+  im.onerror=()=>{im.onerror=null;im.src=BLANK};im.src=imgSrc(c);return im;
+}
+function thumb(c){
+  const d=document.createElement("div");d.className="th";
+  const w=document.createElement("div");w.className="wrapimg";w.appendChild(candyImg(c));
+  const cap=document.createElement("span");cap.className="cap";cap.textContent=c.name;
+  d.append(w,cap);return d;
+}
+function fillThumbs(el,list){el.innerHTML="";list.forEach(c=>el.appendChild(thumb(c)))}
 
 // ---------- sound (tiny, no files) ----------
 let actx;
 function beep(kind){
   try{
     actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-    const seq=kind==="fav"?[523,784]:kind==="ok"?[440]:kind==="over"?[392,330,262,196]:[330,196];
+    const seq=kind==="good"?[523,784]:kind==="over"?[392,330,262,196]:[330,196];
     seq.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==="yuck"||kind==="over"?"sawtooth":"triangle";o.frequency.value=f;
       const t=actx.currentTime+i*.09;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.015);
       g.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.12)});
   }catch(e){}
 }
 
-// ---------- setup screen ----------
-function renderRanks(){
-  const g=$("rankGrid");g.innerHTML="";
-  CANDIES.forEach(c=>{
-    const r=rankOf(c.name);
-    const b=candyEl(c,r==="fav"?"fav":r==="yuck"?"yuck":"");
-    b.setAttribute("aria-label",`${c.name}: ${r==="fav"?"favorite":r==="yuck"?"yuck":"okay"}`);
-    if(r!=="ok")b.insertAdjacentHTML("beforeend",`<span class="tag">${r==="fav"?"⭐":"❌"}</span>`);
-    b.onclick=()=>{const next={ok:"fav",fav:"yuck",yuck:"ok"}[r];if(next==="ok")delete ranks[c.name];else ranks[c.name]=next;save("cb.ranks",ranks);renderRanks()};
-    g.appendChild(b);
-  });
+// ---------- screen 1: the yuck list ----------
+function tile(c){
+  const yuck=isYuck(c);
+  const b=document.createElement("button");b.className="tile"+(yuck?" yuck":"");b.dataset.slug=c.slug;
+  b.setAttribute("aria-label",`${c.name}: ${yuck?"yuck":"good"}. Tap to move to ${yuck?"good":"yuck"}.`);
+  const cap=document.createElement("span");cap.className="cap";cap.textContent=c.name;
+  b.append(candyImg(c),cap);
+  b.onclick=()=>{
+    yuckSlugs=yuck?yuckSlugs.filter(s=>s!==c.slug):[...yuckSlugs,c.slug];
+    save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup();
+    const again=document.querySelector(`.tile[data-slug="${c.slug}"]`);if(again)again.focus({preventScroll:true});
+  };
+  return b;
 }
-$("resetRanks").onclick=()=>{ranks={};save("cb.ranks",ranks);renderRanks()};
+function renderSetup(){
+  const fill=(el,list,msg)=>{el.innerHTML="";if(!list.length){el.innerHTML=`<p class="empty">${msg}</p>`}list.forEach(c=>el.appendChild(tile(c)))};
+  fill($("yuckGrid"),yucks(),"Nothing here yet. Tap a good candy to make it yuck.");
+  fill($("goodGrid"),goods(),"Nothing here yet. Tap a yuck candy to make it good.");
+  $("yuckCount").textContent=yucks().length;$("goodCount").textContent=goods().length;
+}
+$("resetRanks").onclick=()=>{yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup()};
 $("toPlayers").onclick=()=>{
-  if(!byRank("fav").length||!byRank("yuck").length){$("setupHint").hidden=false;return}
-  $("setupHint").hidden=true;goPlayers();$("kidName").focus();
+  if(!listOk()){$("setupHint").hidden=false;return}
+  $("setupHint").hidden=true;save("cb.yuck",yuckSlugs);goPlayers();$("kidName").focus({preventScroll:true});
 };
-function goPlayers(){fillList($("favList"),byRank("fav"));fillList($("yuckList"),byRank("yuck"));show("players")}
+function goSetup(){renderSetup();show("setup")}
 
-// ---------- players screen ----------
+// ---------- screen 2: study up ----------
+function goPlayers(){fillThumbs($("catchList"),goods());fillThumbs($("dodgeList"),yucks());show("players")}
 $("timeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
   [...$("timeChips").children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");gameSecs=+b.dataset.n});
-$("backToSetup").onclick=()=>show("setup");
+$("backToSetup").onclick=goSetup;
 $("kidName").value=load("cb.lastName","");
 $("startGame").onclick=startGame;
 $("kidName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
 
-// ---------- the catch game ----------
+// ---------- screen 3: the catch game ----------
 const stage=$("stage"), cv=$("cv"), ctx=cv.getContext("2d");
 let W=0,H=0,DPR=1;
 function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=stage.clientWidth;H=stage.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
@@ -285,31 +349,44 @@ window.addEventListener("resize",()=>{if(G&&G.running)resize()});
 
 let G=null, raf=0, lastT=0;
 const BUCKET={w:96,h:54};
+const FINAL_SECS=8;
 function startGame(){
+  if(!listOk()){goSetup();return}
   const name=($("kidName").value.trim()||"Trick-or-treater").slice(0,20);save("cb.lastName",name);
   show("play");resize();
-  G={name,score:0,lives:MAX_LIVES,timeLeft:gameSecs,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.min(BUCKET.w,W*.28),
-     items:[],floaters:[],spawnIn:0.4,caught:{fav:0,ok:0,yuck:0},missedFav:0,running:false,over:false,endReason:"",shakeT:0,keys:{}};
+  G={name,secs:gameSecs,lives:MAX_LIVES,timeLeft:gameSecs,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.min(BUCKET.w,W*.28),
+     items:[],floaters:[],spawnIn:0.4,lastX:-999,goodCaught:0,goodMissed:0,yuckCaught:0,yuckDodged:0,dodged:{},
+     running:false,over:false,shakeT:0,keys:{}};
+  const me=G, alive=()=>G===me;
   $("whoPlays").textContent=name;updateHud();
-  // 3-2-1 countdown, then go
+  // 3-2-1 countdown, then go (guarded so quitting mid-countdown cannot start a stale game)
   const cd=$("countdown"), num=cd.querySelector(".count");cd.hidden=false;$("paused").hidden=true;
   let n=3;num.textContent=n;
-  const tick=()=>{n--;if(n>0){num.textContent=n;setTimeout(tick,700)}else{num.textContent="GO!";setTimeout(()=>{cd.hidden=true;G.running=true;lastT=performance.now();raf=requestAnimationFrame(loop)},500)}};
+  const tick=()=>{if(!alive())return;n--;if(n>0){num.textContent=n;setTimeout(tick,700)}else{num.textContent="GO!";setTimeout(()=>{if(!alive())return;cd.hidden=true;G.running=true;lastT=performance.now();raf=requestAnimationFrame(loop)},500)}};
   setTimeout(tick,700);
 }
 function updateHud(){
-  $("scoreNum").textContent=G.score;
+  $("scoreNum").textContent=G.goodCaught;
   $("lives").textContent="🎃".repeat(G.lives)+"🕸️".repeat(MAX_LIVES-G.lives);
-  const t=$("timer");t.textContent=Math.ceil(G.timeLeft);t.classList.toggle("low",G.timeLeft<=10);
+  const t=$("timer");t.textContent=Math.ceil(G.timeLeft);t.classList.toggle("low",G.timeLeft<=FINAL_SECS);
 }
-// difficulty ramps with elapsed time
-const fallSpeed=()=>130+Math.min(G.elapsed,90)*1.9;          // px/s, 130 -> ~300
-const spawnGap=()=>Math.max(0.42,0.95-Math.min(G.elapsed,90)*0.006); // s, 0.95 -> 0.42
+// difficulty ramps with progress p (0 at the start of the round, 1 at the end)
+const prog=()=>Math.min(1,G.elapsed/G.secs);
+const fallSpeed=()=>140+220*prog();          // px/s, 140 -> 360
+const spawnGap=()=>0.9-0.57*prog();          // s, 0.9 -> 0.33
 function spawn(){
-  const r=Math.random(), rank=r<.45?"fav":r<.7?"ok":"yuck";
-  const list=byRank(rank).length?byRank(rank):byRank("fav");
-  const c=pick(list), w=Math.min(84,W*.22);
-  G.items.push({c,rank:rankOf(c.name),x:w/2+12+Math.random()*(W-w-24),y:-30,w,h:34,rot0:(Math.random()-.5)*.5,rot:0,t:Math.random()*6,vy:fallSpeed()*(0.85+Math.random()*.3),drift:(Math.random()-.5)*40});
+  const yuck=Math.random()<.3;
+  const c=pick(yuck?yucks():goods());
+  const baseW=Math.round(Math.max(72,Math.min(84,W*.21)));
+  const im=IMGS[c.slug], useImg=imgOk(im);
+  let w=baseW,h=Math.round(baseW*.45);
+  if(useImg){const a=im.naturalHeight/im.naturalWidth;h=w*a;if(h>w*1.15){h=w*1.15;w=h/a}}
+  // jitter x so back-to-back spawns never stack on the same column
+  let x=W/2;
+  for(let i=0;i<8;i++){x=baseW/2+8+Math.random()*(W-baseW-16);if(Math.abs(x-G.lastX)>baseW*.9)break}
+  G.lastX=x;
+  G.items.push({c,yuck,img:useImg?im:null,x,y:-h/2-4,w,h,rot0:(Math.random()-.5)*.5,rot:0,t:Math.random()*6,
+    vy:fallSpeed()*(0.9+Math.random()*.2),drift:(Math.random()-.5)*30});
 }
 function loop(now){
   if(!G||!G.running)return;
@@ -325,9 +402,9 @@ function loop(now){
   // items
   const bucketTop=H-BUCKET.h-14, bl=G.bx-G.bucketW/2, br=G.bx+G.bucketW/2;
   for(const it of G.items){
-    it.y+=it.vy*dt;it.x+=it.drift*dt;it.t+=dt;it.rot=it.rot0+Math.sin(it.t*2.2)*.3;
-    if(!it.done&&it.y+it.h/2>=bucketTop&&it.y-it.h/2<bucketTop+BUCKET.h&&it.x>bl+6&&it.x<br-6){it.done=true;catchIt(it)}
-    else if(!it.done&&it.y-it.h/2>H){it.done=true;if(it.rank==="fav")G.missedFav++}
+    it.y+=it.vy*dt;it.x=Math.max(it.w/2,Math.min(W-it.w/2,it.x+it.drift*dt));it.t+=dt;it.rot=it.rot0+Math.sin(it.t*2.2)*.3;
+    if(!it.done&&it.y+it.h*.35>=bucketTop&&it.y-it.h/2<bucketTop+BUCKET.h&&it.x>bl+4&&it.x<br-4){it.done=true;catchIt(it);if(G.over)return}
+    else if(!it.done&&it.y-it.h/2>H){it.done=true;if(it.yuck){G.yuckDodged++;G.dodged[it.c.name]=1}else G.goodMissed++}
   }
   G.items=G.items.filter(i=>!i.done);
   for(const f of G.floaters){f.y-=60*dt;f.t-=dt}
@@ -337,11 +414,17 @@ function loop(now){
   raf=requestAnimationFrame(loop);
 }
 function catchIt(it){
-  const pts=POINTS[it.rank];G.score+=pts;G.caught[it.rank]++;
-  G.floaters.push({x:it.x,y:it.y-20,t:0.9,text:(pts>0?"+":"")+pts,color:it.rank==="fav"?"#8ef05a":it.rank==="ok"?"#ffd84d":"#ff5f7a"});
-  beep(it.rank);
-  if(it.rank==="yuck"){G.lives--;G.shakeT=0.35;if(G.lives<=0)return endGame("lives")}
-  if(navigator.vibrate&&it.rank==="yuck"){try{navigator.vibrate(80)}catch(e){}}
+  if(it.yuck){
+    G.yuckCaught++;G.lives--;G.shakeT=0.35;
+    G.floaters.push({x:it.x,y:it.y-20,t:1.1,text:"YUCK!",color:"#ff5f7a",big:true});
+    beep("yuck");
+    if(navigator.vibrate){try{navigator.vibrate(80)}catch(e){}}
+    if(G.lives<=0)endGame("lives");
+  }else{
+    G.goodCaught++;
+    G.floaters.push({x:it.x,y:it.y-20,t:0.9,text:"+1",color:"#8ef05a"});
+    beep("good");
+  }
 }
 function draw(bucketTop){
   ctx.clearRect(0,0,W,H);
@@ -353,14 +436,29 @@ function draw(bucketTop){
   const sx=G.shakeT>0?(Math.random()-.5)*8:0;
   drawBucket(G.bx+sx,bucketTop);
   // floaters
-  ctx.font="700 22px Fredoka, Nunito, sans-serif";ctx.textAlign="center";
-  for(const f of G.floaters){ctx.globalAlpha=Math.min(1,f.t*1.5);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y)}
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";
+  for(const f of G.floaters){ctx.font=`700 ${f.big?30:24}px Fredoka, Nunito, sans-serif`;ctx.globalAlpha=Math.min(1,f.t*1.5);
+    ctx.lineWidth=4;ctx.strokeStyle="rgba(23,16,46,.85)";ctx.strokeText(f.text,f.x,f.y);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y)}
   ctx.globalAlpha=1;
+  // final seconds caption
+  if(G.timeLeft<=FINAL_SECS){
+    const k=Math.sin(performance.now()/110);
+    ctx.save();ctx.translate(W/2,46);ctx.scale(1+.07*k,1+.07*k);ctx.globalAlpha=.8+.2*k;
+    ctx.font="700 30px Fredoka, Nunito, sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.lineWidth=6;ctx.strokeStyle="rgba(23,16,46,.9)";ctx.strokeText("FINAL SECONDS!",0,0);
+    ctx.fillStyle="#ff8a2b";ctx.fillText("FINAL SECONDS!",0,0);ctx.restore();
+  }
 }
 function drawCandy(it){
   ctx.save();ctx.translate(it.x,it.y);ctx.rotate(it.rot);
-  const w=it.w,h=it.h;
-  ctx.fillStyle=it.c.c;
+  if(it.img&&imgOk(it.img)){
+    ctx.shadowColor="rgba(0,0,0,.45)";ctx.shadowBlur=8;ctx.shadowOffsetY=3;
+    ctx.drawImage(it.img,-it.w/2,-it.h/2,it.w,it.h);
+    ctx.restore();return;
+  }
+  // fallback: the drawn wrapper in the manifest color, with the name on it
+  const w=it.w-24,h=Math.min(it.h,38);
+  ctx.fillStyle=it.c.color;
   // twisted ends
   ctx.beginPath();ctx.moveTo(-w/2,-h*.3);ctx.lineTo(-w/2-12,-h/2);ctx.lineTo(-w/2-12,h/2);ctx.lineTo(-w/2,h*.3);ctx.closePath();ctx.fill();
   ctx.beginPath();ctx.moveTo(w/2,-h*.3);ctx.lineTo(w/2+12,-h/2);ctx.lineTo(w/2+12,h/2);ctx.lineTo(w/2,h*.3);ctx.closePath();ctx.fill();
@@ -371,7 +469,7 @@ function drawCandy(it){
   // label
   ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.6)";ctx.shadowBlur=3;ctx.textAlign="center";ctx.textBaseline="middle";
   let fs=13;ctx.font=`700 ${fs}px Fredoka, Nunito, sans-serif`;
-  while(ctx.measureText(it.c.name).width>w-8&&fs>9){fs--;ctx.font=`700 ${fs}px Fredoka, Nunito, sans-serif`}
+  while(ctx.measureText(it.c.name).width>w-6&&fs>8){fs--;ctx.font=`700 ${fs}px Fredoka, Nunito, sans-serif`}
   ctx.fillText(it.c.name,0,1);
   ctx.restore();
 }
@@ -408,25 +506,27 @@ $("resume").onclick=()=>{if(!G||G.over)return;$("paused").hidden=true;G.running=
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
 $("quit").onclick=()=>{if(G){G.running=false;cancelAnimationFrame(raf);G=null}goPlayers()};
 
-// ---------- results + share ----------
+// ---------- screen 4: results + share ----------
 function endGame(reason){
-  G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");
-  const secs=gameSecs, played=Math.round(G.elapsed);
-  const favsCaught=G.caught.fav, pct=favsCaught/Math.max(1,favsCaught+G.missedFav);
-  const stars=G.score<=0?0:(G.lives>0&&pct>=.6&&G.score>=secs*2.5)?3:G.score>=secs*1.2?2:1;
-  $("endReason").textContent=reason==="time"?"Time's up!":"Too many yuck candies!";
-  $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the favorites!";
+  if(G.over)return;
+  G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");$("paused").hidden=true;
+  const secs=G.secs, played=reason==="time"?secs:Math.max(1,Math.round(G.elapsed));
+  const good=G.goodCaught, yuck=G.yuckCaught;
+  const stars=(yuck===0&&good>=secs/2)?3:(yuck<=1&&good>=secs/4)?2:good>0?1:0;
+  $("endReason").textContent=reason==="time"?"Time's up!":"Three yuck candies. The bag is ruined!";
+  $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the yuck list!";
   $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
-  $("finalPts").textContent=G.score;
-  $("finalLine").textContent=reason==="time"?`${G.name} caught candy for ${secs} seconds.`:`${G.name} lasted ${played} seconds before the third yuck candy.`;
-  $("breakdown").innerHTML=`<span>⭐ Favorites caught</span><b>${favsCaught}</b><span>Favorites missed</span><b>${G.missedFav}</b><span>Okay candy caught</span><b>${G.caught.ok}</b><span>❌ Yuck candy caught</span><b>${G.caught.yuck}</b>`;
-  fillList($("favList2"),byRank("fav"));
-  const yuckLine=G.caught.yuck===0?"dodged every yuck candy":`got caught by ${G.caught.yuck} yuck cand${G.caught.yuck===1?"y":"ies"}`;
-  const text=`🎃 Candy Boss: ${G.name} scored ${G.score} points in ${played}s! Caught ${favsCaught} favorite${favsCaught===1?"":"s"}, ${yuckLine}, and earned ${"⭐".repeat(stars)||"no stars yet"}. Can you beat it? 🍬`;
+  $("finalPts").textContent=good;
+  $("finalLine").textContent=`good ${plural(good,"candy","candies")} caught`+(reason==="time"?` in ${secs} seconds by ${G.name}`:`. ${G.name} lasted ${played} seconds`);
+  $("breakdown").innerHTML=`<span>✅ Good caught</span><b>${good}</b><span>Good missed</span><b>${G.goodMissed}</b><span>❌ Yuck caught</span><b>${yuck}</b><span>Yuck dodged</span><b>${G.yuckDodged}</b>`;
+  fillThumbs($("dodgeList2"),yucks());
+  const dodgedNames=Object.keys(G.dodged);
+  const yuckLine=yuck===0?`dodged every ${dodgedNames.length?pick(dodgedNames):"yuck candy"}`:`got stuck with ${yuck} yuck ${plural(yuck,"candy","candies")}`;
+  const text=`🎃 Candy Boss: ${G.name} caught ${good} good ${plural(good,"candy","candies")} in ${played}s and ${yuckLine}.${stars?" "+"⭐".repeat(stars):""} Can you beat it? 🍬`;
   $("shareText").textContent=text;$("toast").textContent="";
-  scores.push({name:G.name,score:G.score,secs,date:new Date().toISOString().slice(0,10)});
-  scores.sort((a,b)=>b.score-a.score);scores=scores.slice(0,8);save("cb.scores",scores);
-  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.secs}s</small></span><b>${s.score}</b></li>`).join("");
+  scores.push({name:G.name,score:good,secs,date:new Date().toISOString().slice(0,10)});
+  scores.sort((a,b)=>b.score-a.score);scores=scores.slice(0,8);save("cb.scores2",scores);
+  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.secs}s</small></span><b>${s.score} caught</b></li>`).join("");
   show("results");
 }
 async function copyText(){
@@ -441,11 +541,11 @@ $("shareBtn").onclick=async()=>{
   copyText();
 };
 $("again").onclick=goPlayers;
-$("toSetup2").onclick=()=>show("setup");
+$("toSetup2").onclick=goSetup;
 
 // ---------- boot ----------
-renderRanks();
-if(byRank("fav").length&&byRank("yuck").length)goPlayers();else show("setup");
+renderSetup();
+if(hadSaved)goPlayers();else show("setup");
 </script>
 </body>
 </html>
