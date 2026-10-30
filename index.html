@@ -165,7 +165,7 @@ p{margin:0}
 .score{font-size:2.1rem;line-height:1;font-variant-numeric:tabular-nums}
 .timer{font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1}
 .lives{font-size:1.5rem;letter-spacing:.05em;line-height:1;font-family:var(--body)}
-.stage{position:relative;width:100%;height:min(68vh,620px);border-radius:22px 26px 20px 24px;overflow:hidden;border:3px solid var(--ink);box-shadow:4px 5px 0 var(--ink);
+.stage{position:relative;width:100%;height:min(78vh,720px);border-radius:22px 26px 20px 24px;overflow:hidden;border:3px solid var(--ink);box-shadow:4px 5px 0 var(--ink);
   background:linear-gradient(#141032 0%,#2a2156 70%,#3b2d5c 100%);touch-action:none;user-select:none;-webkit-user-select:none}
 .stage canvas{display:block;width:100%;height:100%}
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
@@ -174,8 +174,10 @@ p{margin:0}
   text-shadow:-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 3px 0 var(--ink),3px 3px 0 var(--ink),0 7px 0 var(--ink)}
 .overlay p{font-weight:900;font-size:1.1rem}
 .overlay h2{color:#fff3d2}
-.playbtns{justify-content:space-between}
-.playbtns .btn{font-size:1.05rem;padding:10px 20px 8px}
+.pausefab{position:absolute;top:10px;left:10px;z-index:3;width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:1rem;font-weight:900;letter-spacing:-.1em;cursor:pointer;box-shadow:0 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;padding:0 2px 0 0}
+.pausefab:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.pausefab:focus-visible{outline:3px solid var(--orange-deep);outline-offset:2px}
+#paused .btn{min-width:200px}
 
 /* ---------- COMPLETION: a hand-drawn scorecard, built to be screenshotted ---------- */
 #results{gap:16px}
@@ -335,7 +337,7 @@ p{margin:0}
     <div class="yhead"><h3 class="ystamp">Yuck!</h3><p class="ylead">Don't catch these:</p></div>
     <div id="dodgeList" class="thumbs"></div>
   </div>
-  <p class="howto">Slide to move the ghost. Catch the good stuff, dodge the yucky stuff. Three yucky candies and the night is over.</p>
+  <p class="howto">Tap the candy as it falls. Catch the good stuff, dodge the yucky stuff. Three yucky candies and the night is over.</p>
   <p class="footlinks"><button class="linkbtn" id="toSetupHome">Customize your yuck list</button><span class="sep" aria-hidden="true">·</span><a href="https://x.com/moochieball" target="_blank" rel="noopener">by @moochieball</a></p>
 </section>
 
@@ -348,12 +350,9 @@ p{margin:0}
   </div>
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
-    <div class="overlay" id="countdown"><div class="count">3</div><p>Get ready to catch!</p></div>
-    <div class="overlay" id="paused" hidden><h2>Paused</h2><button class="btn" id="resume">Keep going</button></div>
-  </div>
-  <div class="row playbtns">
-    <button class="btn ghost" id="pauseBtn">Pause</button>
-    <button class="btn ghost" id="quit">Quit</button>
+    <button class="pausefab" id="pauseBtn" aria-label="Pause">❚❚</button>
+    <div class="overlay" id="countdown"><div class="count">3</div><p>Tap the candy to run and catch it!</p></div>
+    <div class="overlay" id="paused" hidden><h2>Paused</h2><button class="btn" id="resume">Keep going</button><button class="btn ghost" id="quit">Quit</button></div>
   </div>
 </section>
 
