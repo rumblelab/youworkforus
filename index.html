@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Candy Boss</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
 <style>
-/* Layout: one-screen phone-first stack. Night sky, pumpkin accent, candy wrappers as the visual stars. Single dark theme by choice: it's Halloween night. */
+/* Layout: phone-first stack. Night sky, pumpkin accent, candy wrappers as the visual stars. Single dark theme by choice: it's Halloween night. */
 :root{
   --night:#17102e; --night-2:#241a44; --moon:#fff3d2; --moon-dim:#c9bfdf;
   --pumpkin:#ff8a2b; --pumpkin-deep:#d9651a;
@@ -46,7 +46,7 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 .chip{font-family:var(--display);font-size:1rem;border:2px solid var(--line);background:var(--night-2);color:var(--moon);border-radius:999px;padding:8px 16px;cursor:pointer}
 .chip[aria-pressed=true]{background:var(--moon);color:var(--night);border-color:var(--moon)}
 
-/* candy wrappers */
+/* candy wrappers (setup grid) */
 .candy{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;border:0;cursor:pointer;
   font-family:var(--display);font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);
   padding:14px 22px;min-height:64px;border-radius:10px;background:var(--c,#888);
@@ -69,49 +69,50 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 .legend .g{color:var(--good)}.legend .m{color:var(--meh)}.legend .y{color:var(--yuck)}
 
 /* play */
+#play{gap:10px}
 .hud{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--display)}
-.score{font-size:2rem;color:var(--moon);font-variant-numeric:tabular-nums}
-.score small{font-size:.9rem;color:var(--moon-dim);display:block;line-height:1}
-.progress{height:10px;background:var(--night-2);border-radius:99px;overflow:hidden}
-.progress i{display:block;height:100%;background:var(--pumpkin);transition:width .3s}
-.house{display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 12px 10px;background:linear-gradient(var(--night-2),var(--card));border-radius:18px;border:1px solid var(--line)}
-.houseart{font-size:5rem;line-height:1;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
-.bowl{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 30px;padding:10px 16px 4px;width:100%}
-@media (min-width:480px){.bowl{grid-template-columns:repeat(3,1fr)}}
-.verdict{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
-.verdict .big{font-family:var(--display);font-size:2.2rem;line-height:1.05}
-.verdict.good .big{color:var(--good)}.verdict.meh .big{color:var(--meh)}.verdict.yuck .big{color:var(--yuck)}
-.pts{font-family:var(--display);font-size:3rem;line-height:1}
+.score{font-size:2rem;color:var(--moon);font-variant-numeric:tabular-nums;line-height:1}
+.score small,.hud .lab{font-size:.8rem;color:var(--moon-dim);display:block;line-height:1;margin-bottom:4px}
+.timer{font-size:1.8rem;font-variant-numeric:tabular-nums;line-height:1}
+.timer.low{color:var(--yuck)}
+.lives{font-size:1.5rem;letter-spacing:.05em;line-height:1}
+.stage{position:relative;width:100%;height:min(68vh,620px);border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(#1d1440 0%,#2b2152 70%,#3a2a4a 100%);touch-action:none;user-select:none;-webkit-user-select:none}
+.stage canvas{display:block;width:100%;height:100%}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
+  background:rgba(23,16,46,.78);padding:20px}
+.overlay .count{font-family:var(--display);font-size:6rem;color:var(--pumpkin);line-height:1}
 .bag{display:flex;flex-wrap:wrap;gap:6px}
 .bag span{font-size:.85rem;font-weight:800;padding:4px 10px;border-radius:999px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);background:var(--c)}
+.pts{font-family:var(--display);font-size:3rem;line-height:1}
 .stars{font-size:2.4rem;letter-spacing:.1em}
 .stat{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-weight:700}
 .stat b{font-variant-numeric:tabular-nums;text-align:right}
 .hs{list-style:none;padding:0;margin:0;display:grid;gap:6px}
 .hs li{display:flex;justify-content:space-between;padding:8px 12px;background:var(--night-2);border-radius:10px;font-weight:700}
 .hs li b{font-variant-numeric:tabular-nums}
+.sharebox{font-family:var(--body);font-weight:700;background:var(--night-2);border-radius:12px;padding:12px;white-space:pre-wrap;word-break:break-word;user-select:all;-webkit-user-select:all}
+.toast{font-weight:800;color:var(--good);min-height:1.4em}
 .pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-.shake{animation:shake .4s}
-@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@media (prefers-reduced-motion:reduce){.pop,.shake{animation:none}.candy{transition:none}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.candy{transition:none}}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- SETUP: the parent ranks the candy -->
+<!-- STEP 1: the parent ranks the candy -->
 <section id="setup" class="screen">
   <div>
-    <p class="eyebrow">Parent setup</p>
+    <p class="eyebrow">Step 1 · Parent setup</p>
     <h1>Candy Boss</h1>
-    <p class="muted">Tap each candy to rank it. Your kids will go trick-or-treating and score points for bringing home what <em>you</em> love.</p>
+    <p class="muted">Tap each candy to rank it. Candy will rain from the sky, and your kids score by catching what <em>you</em> love and dodging what you don't.</p>
   </div>
   <div class="legend">
-    <div class="g">⭐ Favorite<br>+10</div>
+    <div class="g">⭐ Catch it<br>+10</div>
     <div class="m">Okay<br>+2</div>
-    <div class="y">❌ Yuck<br>−5</div>
+    <div class="y">❌ Dodge it<br>−5 &amp; lose a life</div>
   </div>
   <p class="muted" style="font-size:.95rem">Tap once for ⭐ favorite, again for ❌ yuck, again to clear.</p>
   <div id="rankGrid" class="grid"></div>
@@ -119,85 +120,81 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
     <button class="btn big" id="toPlayers">Let the kids play →</button>
     <button class="btn ghost" id="resetRanks">Clear all</button>
   </div>
-  <p id="setupHint" class="muted" hidden>Pick at least one ⭐ favorite first.</p>
+  <p id="setupHint" class="muted" hidden>Pick at least one ⭐ favorite and one ❌ yuck candy first.</p>
 </section>
 
-<!-- PLAYER: who is trick-or-treating -->
+<!-- STEP 2a: who is playing -->
 <section id="players" class="screen" hidden>
   <div>
-    <p class="eyebrow">Who's going out tonight?</p>
-    <h2>Grab your bag</h2>
+    <p class="eyebrow">Step 2 · Catch the candy</p>
+    <h2>Grab your bucket</h2>
   </div>
   <div class="panel screen">
     <label for="kidName" style="font-weight:800">Your name</label>
     <input id="kidName" type="text" maxlength="20" placeholder="Type your name" autocomplete="off">
-    <div style="font-weight:800">How many houses?</div>
-    <div class="row" id="houseChips">
-      <button class="chip" data-n="6" aria-pressed="false">6 houses</button>
-      <button class="chip" data-n="10" aria-pressed="true">10 houses</button>
-      <button class="chip" data-n="15" aria-pressed="false">15 houses</button>
+    <div style="font-weight:800">How long?</div>
+    <div class="row" id="timeChips">
+      <button class="chip" data-n="30" aria-pressed="false">30 seconds</button>
+      <button class="chip" data-n="60" aria-pressed="true">60 seconds</button>
+      <button class="chip" data-n="90" aria-pressed="false">90 seconds</button>
     </div>
     <div class="panel" style="background:var(--night-2)">
-      <p class="eyebrow">Remember, the Candy Boss loves:</p>
+      <p class="eyebrow">Catch these</p>
       <div id="favList" class="bag" style="margin-top:8px"></div>
+      <p class="eyebrow" style="margin-top:12px;color:var(--yuck)">Dodge these</p>
+      <div id="yuckList" class="bag" style="margin-top:8px"></div>
     </div>
+    <p class="muted" style="font-size:.95rem">Slide your finger (or the mouse) to move the bucket. Arrow keys work too. Catch 3 yuck candies and the night is over!</p>
   </div>
   <div class="row">
-    <button class="btn big" id="startGame">Trick or treat! 🎃</button>
+    <button class="btn big" id="startGame">Start catching! 🎃</button>
     <button class="btn ghost" id="backToSetup">Parent setup</button>
   </div>
 </section>
 
-<!-- PLAY -->
+<!-- STEP 2b: the catch game -->
 <section id="play" class="screen" hidden>
   <div class="hud">
-    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span> pts</div>
-    <div style="text-align:right"><small class="muted" style="display:block">House</small><span id="houseNum" style="font-size:1.4rem;font-variant-numeric:tabular-nums">1 / 10</span></div>
+    <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span></div>
+    <div style="text-align:center"><span class="lab">Lives</span><div class="lives" id="lives">🎃🎃🎃</div></div>
+    <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">60</div></div>
   </div>
-  <div class="progress"><i id="bar" style="width:0%"></i></div>
-
-  <div class="house" id="houseCard">
-    <div class="houseart" id="houseArt">🏠</div>
-    <div id="knockWrap" class="screen" style="align-items:center">
-      <p class="muted" id="houseLine">A porch light is on…</p>
-      <button class="btn big" id="knock">Knock knock! 🚪</button>
-    </div>
-    <div id="bowlWrap" class="screen" hidden style="width:100%;align-items:center">
-      <p style="font-weight:800" id="bowlLine">"Take one!" Which candy do you pick?</p>
-      <div class="bowl" id="bowl"></div>
-    </div>
-    <div id="verdictWrap" class="verdict" hidden>
-      <div class="big" id="verdictTitle"></div>
-      <div class="pts" id="verdictPts"></div>
-      <p id="verdictLine" class="muted"></p>
-      <button class="btn big" id="nextHouse">Next house →</button>
-    </div>
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="overlay" id="countdown"><div class="count">3</div><p style="font-weight:800">Get ready to catch!</p></div>
+    <div class="overlay" id="paused" hidden><h2>Paused</h2><button class="btn" id="resume">Keep going</button></div>
   </div>
-
-  <div>
-    <p class="eyebrow">Your bag</p>
-    <div id="bagView" class="bag" style="margin-top:6px"><span class="muted" style="background:var(--night-2);color:var(--moon-dim)">empty so far</span></div>
+  <div class="row" style="justify-content:space-between">
+    <button class="btn ghost" id="pauseBtn">Pause</button>
+    <button class="btn ghost" id="quit">Quit</button>
   </div>
-  <button class="btn ghost" id="quit" style="align-self:flex-start">Quit</button>
 </section>
 
-<!-- RESULTS -->
+<!-- RESULTS + SHARE -->
 <section id="results" class="screen" hidden>
   <div style="text-align:center">
-    <p class="eyebrow">Trick-or-treating is over</p>
+    <p class="eyebrow" id="endReason">Time's up!</p>
     <h2 id="resultTitle">Great haul!</h2>
     <div class="stars" id="starRow">⭐⭐⭐</div>
     <div class="pts" id="finalPts" style="color:var(--pumpkin)">0</div>
     <p class="muted" id="finalLine"></p>
   </div>
   <div class="panel stat" id="breakdown"></div>
-  <div class="panel">
-    <p class="eyebrow">Next time, look for these</p>
-    <div id="favList2" class="bag" style="margin-top:8px"></div>
-    <p class="muted" id="missedLine" style="margin-top:10px"></p>
+  <div class="panel screen" style="gap:10px">
+    <p class="eyebrow">Share your score</p>
+    <div class="sharebox" id="shareText"></div>
+    <div class="row">
+      <button class="btn" id="shareBtn">Share</button>
+      <button class="btn ghost" id="copyBtn">Copy</button>
+    </div>
+    <div class="toast" id="toast"></div>
   </div>
   <div class="panel">
-    <p class="eyebrow">Top candy collectors</p>
+    <p class="eyebrow">Next time, catch these</p>
+    <div id="favList2" class="bag" style="margin-top:8px"></div>
+  </div>
+  <div class="panel">
+    <p class="eyebrow">Top candy catchers</p>
     <ol class="hs" id="hsList" style="margin-top:8px"></ol>
   </div>
   <div class="row">
@@ -221,38 +218,35 @@ const CANDIES = [
   ["Dots","#e8571f"],["Hot Tamales","#c6181f"],["Junior Mints","#1aa37a"],["Raisins (really?)","#6d1a7a"]
 ].map(([name,c])=>({name,c}));
 const POINTS={fav:10,ok:2,yuck:-5};
-const HOUSES=["🏠","🏡","🏚️","🏘️","🏰","🛖","🏯","🏛️"];
-const LINES=["A porch light is on…","A jack-o'-lantern grins at you…","Spooky music drifts out…","A skeleton waves from the window…","Cobwebs everywhere. Dare you knock?","A friendly witch is handing out candy…","A dog barks inside. Still worth it…","The doorbell plays a scary tune…"];
-const GOOD_LINES=["The Candy Boss LOVES this one!","Jackpot! That's a favorite!","You've got the eye! Big points!","Yes! That's exactly what we want!"];
-const MEH_LINES=["It's okay. Not a favorite though.","Fine, but keep hunting for the good stuff.","Meh. You can do better next door."];
-const YUCK_LINES=["Ewww. The Candy Boss hates that one.","Oh no. That's a yuck candy.","Nope! Leave that one in the bowl."];
+const MAX_LIVES=3;
 
 // ---------- storage ----------
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let ranks=load("cb.ranks",{});       // name -> "fav" | "yuck"
-let scores=load("cb.scores",[]);     // [{name,score,houses,date}]
-let houseCount=10;
+let scores=load("cb.scores",[]);     // [{name,score,secs,date}]
+let gameSecs=60;
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
 const rankOf=n=>ranks[n]||"ok";
-const favs=()=>CANDIES.filter(c=>rankOf(c.name)==="fav");
+const byRank=r=>CANDIES.filter(c=>rankOf(c.name)===r);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function show(id){["setup","players","play","results"].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
 function candyEl(c,extra=""){const b=document.createElement("button");b.className="candy "+extra;b.style.setProperty("--c",c.c);b.innerHTML=`<span class="lbl">${c.name}</span>`;return b}
 function pill(c){const s=document.createElement("span");s.style.setProperty("--c",c.c);s.textContent=c.name;return s}
+function fillList(el,list){el.innerHTML="";list.forEach(c=>el.appendChild(pill(c)))}
+const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 
 // ---------- sound (tiny, no files) ----------
 let actx;
 function beep(kind){
   try{
     actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-    const seq=kind==="fav"?[523,659,784,1046]:kind==="ok"?[440,523]:[330,247,196];
-    seq.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==="yuck"?"sawtooth":"triangle";o.frequency.value=f;
-      g.gain.setValueAtTime(0.0001,actx.currentTime+i*.11);g.gain.exponentialRampToValueAtTime(.25,actx.currentTime+i*.11+.02);
-      g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+i*.11+.12);o.connect(g).connect(actx.destination);o.start(actx.currentTime+i*.11);o.stop(actx.currentTime+i*.11+.14)});
+    const seq=kind==="fav"?[523,784]:kind==="ok"?[440]:kind==="over"?[392,330,262,196]:[330,196];
+    seq.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=kind==="yuck"||kind==="over"?"sawtooth":"triangle";o.frequency.value=f;
+      const t=actx.currentTime+i*.09;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.015);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.12)});
   }catch(e){}
 }
 
@@ -270,97 +264,188 @@ function renderRanks(){
 }
 $("resetRanks").onclick=()=>{ranks={};save("cb.ranks",ranks);renderRanks()};
 $("toPlayers").onclick=()=>{
-  if(!favs().length){$("setupHint").hidden=false;return}
-  $("setupHint").hidden=true;renderFavList($("favList"));show("players");$("kidName").focus();
+  if(!byRank("fav").length||!byRank("yuck").length){$("setupHint").hidden=false;return}
+  $("setupHint").hidden=true;goPlayers();$("kidName").focus();
 };
-function renderFavList(el){el.innerHTML="";favs().forEach(c=>el.appendChild(pill(c)))}
+function goPlayers(){fillList($("favList"),byRank("fav"));fillList($("yuckList"),byRank("yuck"));show("players")}
 
 // ---------- players screen ----------
-$("houseChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
-  [...$("houseChips").children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");houseCount=+b.dataset.n});
+$("timeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  [...$("timeChips").children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");gameSecs=+b.dataset.n});
 $("backToSetup").onclick=()=>show("setup");
 $("kidName").value=load("cb.lastName","");
 $("startGame").onclick=startGame;
 $("kidName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
 
-// ---------- game ----------
-let G;
+// ---------- the catch game ----------
+const stage=$("stage"), cv=$("cv"), ctx=cv.getContext("2d");
+let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=stage.clientWidth;H=stage.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+window.addEventListener("resize",()=>{if(G&&G.running)resize()});
+
+let G=null, raf=0, lastT=0;
+const BUCKET={w:96,h:54};
 function startGame(){
   const name=($("kidName").value.trim()||"Trick-or-treater").slice(0,20);save("cb.lastName",name);
-  G={name,house:0,score:0,bag:[],picks:{fav:0,ok:0,yuck:0},missedFav:0};
-  $("whoPlays").textContent=name;renderBag();show("play");nextHouse();
+  show("play");resize();
+  G={name,score:0,lives:MAX_LIVES,timeLeft:gameSecs,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.min(BUCKET.w,W*.28),
+     items:[],floaters:[],spawnIn:0.4,caught:{fav:0,ok:0,yuck:0},missedFav:0,running:false,over:false,endReason:"",shakeT:0,keys:{}};
+  $("whoPlays").textContent=name;updateHud();
+  // 3-2-1 countdown, then go
+  const cd=$("countdown"), num=cd.querySelector(".count");cd.hidden=false;$("paused").hidden=true;
+  let n=3;num.textContent=n;
+  const tick=()=>{n--;if(n>0){num.textContent=n;setTimeout(tick,700)}else{num.textContent="GO!";setTimeout(()=>{cd.hidden=true;G.running=true;lastT=performance.now();raf=requestAnimationFrame(loop)},500)}};
+  setTimeout(tick,700);
 }
-function nextHouse(){
-  if(G.house>=houseCount){return finish()}
-  G.house++;
-  $("houseNum").textContent=`${G.house} / ${houseCount}`;
-  $("bar").style.width=`${((G.house-1)/houseCount)*100}%`;
+function updateHud(){
   $("scoreNum").textContent=G.score;
-  $("houseArt").textContent=pick(HOUSES);$("houseLine").textContent=pick(LINES);
-  $("knockWrap").hidden=false;$("bowlWrap").hidden=true;$("verdictWrap").hidden=true;
-  $("houseCard").classList.remove("pop","shake");
+  $("lives").textContent="🎃".repeat(G.lives)+"🕸️".repeat(MAX_LIVES-G.lives);
+  const t=$("timer");t.textContent=Math.ceil(G.timeLeft);t.classList.toggle("low",G.timeLeft<=10);
 }
-function makeBowl(){
-  // 3 or 4 candies. Most bowls hide at least one favorite; some have none so kids learn to settle for "okay".
-  const n=Math.random()<.5?3:4;
-  const f=favs(), y=CANDIES.filter(c=>rankOf(c.name)==="yuck"), o=CANDIES.filter(c=>rankOf(c.name)==="ok");
-  let bowl=[];
-  if(Math.random()<.75&&f.length)bowl.push(pick(f));
-  if(Math.random()<.6&&y.length)bowl.push(pick(y));
-  const pool=shuffle(CANDIES.filter(c=>!bowl.includes(c)&&(o.includes(c)||Math.random()<.3)));
-  while(bowl.length<n&&pool.length)bowl.push(pool.pop());
-  return shuffle(bowl);
+// difficulty ramps with elapsed time
+const fallSpeed=()=>130+Math.min(G.elapsed,90)*1.9;          // px/s, 130 -> ~300
+const spawnGap=()=>Math.max(0.42,0.95-Math.min(G.elapsed,90)*0.006); // s, 0.95 -> 0.42
+function spawn(){
+  const r=Math.random(), rank=r<.45?"fav":r<.7?"ok":"yuck";
+  const list=byRank(rank).length?byRank(rank):byRank("fav");
+  const c=pick(list), w=Math.min(84,W*.22);
+  G.items.push({c,rank:rankOf(c.name),x:w/2+12+Math.random()*(W-w-24),y:-30,w,h:34,rot0:(Math.random()-.5)*.5,rot:0,t:Math.random()*6,vy:fallSpeed()*(0.85+Math.random()*.3),drift:(Math.random()-.5)*40});
 }
-$("knock").onclick=()=>{
-  const bowl=makeBowl();const el=$("bowl");el.innerHTML="";
-  bowl.forEach(c=>{const b=candyEl(c);b.classList.add("pop");b.onclick=()=>choose(c,bowl);el.appendChild(b)});
-  $("knockWrap").hidden=true;$("bowlWrap").hidden=false;
-};
-function choose(c,bowl){
-  const r=rankOf(c.name), pts=POINTS[r];
-  G.score+=pts;G.bag.push(c);G.picks[r]++;
-  const bestAvail=bowl.some(x=>rankOf(x.name)==="fav");
-  if(bestAvail&&r!=="fav")G.missedFav++;
-  beep(r);
-  const v=$("verdictWrap");v.className="verdict "+(r==="fav"?"good":r==="ok"?"meh":"yuck");
-  $("verdictTitle").textContent=r==="fav"?"⭐ YES!":r==="ok"?"Hmm, okay.":"❌ YUCK!";
-  $("verdictPts").textContent=(pts>0?"+":"")+pts;
-  let line=`${c.name}: ${r==="fav"?pick(GOOD_LINES):r==="ok"?pick(MEH_LINES):pick(YUCK_LINES)}`;
-  if(bestAvail&&r!=="fav"){const best=bowl.find(x=>rankOf(x.name)==="fav");line+=` The bowl had ${best.name}, a favorite!`}
-  $("verdictLine").textContent=line;
-  $("scoreNum").textContent=G.score;
-  $("bowlWrap").hidden=true;v.hidden=false;
-  $("houseCard").classList.add(r==="yuck"?"shake":"pop");
-  $("nextHouse").textContent=G.house>=houseCount?"See my score →":"Next house →";
-  renderBag();
+function loop(now){
+  if(!G||!G.running)return;
+  const dt=Math.min(0.05,(now-lastT)/1000);lastT=now;
+  G.elapsed+=dt;G.timeLeft-=dt;
+  if(G.timeLeft<=0){G.timeLeft=0;return endGame("time")}
+  // movement
+  if(G.keys.ArrowLeft)G.targetX-=420*dt; if(G.keys.ArrowRight)G.targetX+=420*dt;
+  G.targetX=Math.max(G.bucketW/2,Math.min(W-G.bucketW/2,G.targetX));
+  G.bx+=(G.targetX-G.bx)*Math.min(1,dt*18);
+  // spawn
+  G.spawnIn-=dt;if(G.spawnIn<=0){spawn();G.spawnIn=spawnGap()}
+  // items
+  const bucketTop=H-BUCKET.h-14, bl=G.bx-G.bucketW/2, br=G.bx+G.bucketW/2;
+  for(const it of G.items){
+    it.y+=it.vy*dt;it.x+=it.drift*dt;it.t+=dt;it.rot=it.rot0+Math.sin(it.t*2.2)*.3;
+    if(!it.done&&it.y+it.h/2>=bucketTop&&it.y-it.h/2<bucketTop+BUCKET.h&&it.x>bl+6&&it.x<br-6){it.done=true;catchIt(it)}
+    else if(!it.done&&it.y-it.h/2>H){it.done=true;if(it.rank==="fav")G.missedFav++}
+  }
+  G.items=G.items.filter(i=>!i.done);
+  for(const f of G.floaters){f.y-=60*dt;f.t-=dt}
+  G.floaters=G.floaters.filter(f=>f.t>0);
+  if(G.shakeT>0)G.shakeT-=dt;
+  updateHud();draw(bucketTop);
+  raf=requestAnimationFrame(loop);
 }
-function renderBag(){const b=$("bagView");b.innerHTML=G.bag.length?"":'<span style="background:var(--night-2);color:var(--moon-dim)">empty so far</span>';G.bag.forEach(c=>b.appendChild(pill(c)))}
-$("nextHouse").onclick=nextHouse;
-$("quit").onclick=()=>show("players");
+function catchIt(it){
+  const pts=POINTS[it.rank];G.score+=pts;G.caught[it.rank]++;
+  G.floaters.push({x:it.x,y:it.y-20,t:0.9,text:(pts>0?"+":"")+pts,color:it.rank==="fav"?"#8ef05a":it.rank==="ok"?"#ffd84d":"#ff5f7a"});
+  beep(it.rank);
+  if(it.rank==="yuck"){G.lives--;G.shakeT=0.35;if(G.lives<=0)return endGame("lives")}
+  if(navigator.vibrate&&it.rank==="yuck"){try{navigator.vibrate(80)}catch(e){}}
+}
+function draw(bucketTop){
+  ctx.clearRect(0,0,W,H);
+  // ground
+  ctx.fillStyle="#1a1230";ctx.fillRect(0,H-12,W,12);
+  // candies
+  for(const it of G.items)drawCandy(it);
+  // bucket
+  const sx=G.shakeT>0?(Math.random()-.5)*8:0;
+  drawBucket(G.bx+sx,bucketTop);
+  // floaters
+  ctx.font="700 22px Fredoka, Nunito, sans-serif";ctx.textAlign="center";
+  for(const f of G.floaters){ctx.globalAlpha=Math.min(1,f.t*1.5);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y)}
+  ctx.globalAlpha=1;
+}
+function drawCandy(it){
+  ctx.save();ctx.translate(it.x,it.y);ctx.rotate(it.rot);
+  const w=it.w,h=it.h;
+  ctx.fillStyle=it.c.c;
+  // twisted ends
+  ctx.beginPath();ctx.moveTo(-w/2,-h*.3);ctx.lineTo(-w/2-12,-h/2);ctx.lineTo(-w/2-12,h/2);ctx.lineTo(-w/2,h*.3);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(w/2,-h*.3);ctx.lineTo(w/2+12,-h/2);ctx.lineTo(w/2+12,h/2);ctx.lineTo(w/2,h*.3);ctx.closePath();ctx.fill();
+  // body
+  rr(-w/2,-h/2,w,h,7);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.22)";rr(-w/2,-h/2,w,h*.3,7);ctx.fill();
+  ctx.fillStyle="rgba(0,0,0,.2)";rr(-w/2,h/2-6,w,6,3);ctx.fill();
+  // label
+  ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.6)";ctx.shadowBlur=3;ctx.textAlign="center";ctx.textBaseline="middle";
+  let fs=13;ctx.font=`700 ${fs}px Fredoka, Nunito, sans-serif`;
+  while(ctx.measureText(it.c.name).width>w-8&&fs>9){fs--;ctx.font=`700 ${fs}px Fredoka, Nunito, sans-serif`}
+  ctx.fillText(it.c.name,0,1);
+  ctx.restore();
+}
+function drawBucket(x,top){
+  const w=G.bucketW,h=BUCKET.h;
+  ctx.save();ctx.translate(x,top);
+  // handle
+  ctx.strokeStyle="#3a2a1a";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,6,w*.42,Math.PI*1.05,Math.PI*1.95);ctx.stroke();
+  // body
+  ctx.fillStyle="#ff8a2b";ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(w/2,0);ctx.lineTo(w/2-10,h);ctx.lineTo(-w/2+10,h);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(0,0,0,.18)";ctx.beginPath();ctx.moveTo(w/2-14,0);ctx.lineTo(w/2,0);ctx.lineTo(w/2-10,h);ctx.lineTo(w/2-22,h);ctx.closePath();ctx.fill();
+  // rim
+  ctx.fillStyle="#d9651a";rr(-w/2-3,-5,w+6,10,5);ctx.fill();
+  // face
+  ctx.fillStyle="#2a1300";
+  ctx.beginPath();ctx.moveTo(-w*.22,16);ctx.lineTo(-w*.1,16);ctx.lineTo(-w*.16,26);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(w*.22,16);ctx.lineTo(w*.1,16);ctx.lineTo(w*.16,26);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(-w*.22,34);ctx.lineTo(-w*.12,42);ctx.lineTo(-w*.05,34);ctx.lineTo(0,42);ctx.lineTo(w*.05,34);ctx.lineTo(w*.12,42);ctx.lineTo(w*.22,34);ctx.lineTo(w*.22,30);ctx.lineTo(-w*.22,30);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 
-// ---------- results ----------
-function finish(){
-  const max=houseCount*POINTS.fav, pct=Math.max(0,G.score)/max;
-  const stars=pct>=.9?3:pct>=.6?2:pct>=.3?1:0;
+// controls: drag anywhere on the stage, or arrow keys
+function setTarget(clientX){if(!G)return;const r=stage.getBoundingClientRect();G.targetX=clientX-r.left}
+stage.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;try{stage.setPointerCapture(e.pointerId)}catch(err){}setTarget(e.clientX)});
+stage.addEventListener("pointermove",e=>{if(e.pressure>0||e.buttons>0||e.pointerType==="mouse")setTarget(e.clientX)});
+window.addEventListener("keydown",e=>{if(!G||$("play").hidden)return;if(e.key==="ArrowLeft"||e.key==="ArrowRight"){G.keys[e.key]=true;e.preventDefault()}});
+window.addEventListener("keyup",e=>{if(G)G.keys[e.key]=false});
+
+// pause / quit
+function pause(){if(!G||!G.running||G.over)return;G.running=false;cancelAnimationFrame(raf);$("paused").hidden=false}
+$("pauseBtn").onclick=pause;
+$("resume").onclick=()=>{if(!G||G.over)return;$("paused").hidden=true;G.running=true;lastT=performance.now();raf=requestAnimationFrame(loop)};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
+$("quit").onclick=()=>{if(G){G.running=false;cancelAnimationFrame(raf);G=null}goPlayers()};
+
+// ---------- results + share ----------
+function endGame(reason){
+  G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");
+  const secs=gameSecs, played=Math.round(G.elapsed);
+  const favsCaught=G.caught.fav, pct=favsCaught/Math.max(1,favsCaught+G.missedFav);
+  const stars=G.lives>0&&pct>=.75?3:pct>=.5?2:pct>=.25?1:0;
+  $("endReason").textContent=reason==="time"?"Time's up!":"Too many yuck candies!";
   $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the favorites!";
   $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
   $("finalPts").textContent=G.score;
-  $("finalLine").textContent=`${G.name} visited ${houseCount} houses. Perfect score would be ${max}.`;
-  $("breakdown").innerHTML=`<span>⭐ Favorites picked</span><b>${G.picks.fav}</b><span>Okay candy</span><b>${G.picks.ok}</b><span>❌ Yuck candy</span><b>${G.picks.yuck}</b>`;
-  renderFavList($("favList2"));
-  $("missedLine").textContent=G.missedFav?`You walked past a favorite ${G.missedFav} time${G.missedFav>1?"s":""}. Look closer in the bowl!`:"You never missed a favorite when one was there. Sharp eyes!";
-  scores.push({name:G.name,score:G.score,houses:houseCount,date:new Date().toISOString().slice(0,10)});
+  $("finalLine").textContent=reason==="time"?`${G.name} caught candy for ${secs} seconds.`:`${G.name} lasted ${played} seconds before the third yuck candy.`;
+  $("breakdown").innerHTML=`<span>⭐ Favorites caught</span><b>${favsCaught}</b><span>Favorites missed</span><b>${G.missedFav}</b><span>Okay candy caught</span><b>${G.caught.ok}</b><span>❌ Yuck candy caught</span><b>${G.caught.yuck}</b>`;
+  fillList($("favList2"),byRank("fav"));
+  const yuckLine=G.caught.yuck===0?"dodged every yuck candy":`got caught by ${G.caught.yuck} yuck cand${G.caught.yuck===1?"y":"ies"}`;
+  const text=`🎃 Candy Boss: ${G.name} scored ${G.score} points in ${played}s! Caught ${favsCaught} favorite${favsCaught===1?"":"s"}, ${yuckLine}, and earned ${"⭐".repeat(stars)||"no stars yet"}. Can you beat it? 🍬`;
+  $("shareText").textContent=text;$("toast").textContent="";
+  scores.push({name:G.name,score:G.score,secs,date:new Date().toISOString().slice(0,10)});
   scores.sort((a,b)=>b.score-a.score);scores=scores.slice(0,8);save("cb.scores",scores);
-  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.houses} houses</small></span><b>${s.score}</b></li>`).join("");
+  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.secs}s</small></span><b>${s.score}</b></li>`).join("");
   show("results");
 }
-const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-$("again").onclick=()=>{renderFavList($("favList"));show("players")};
+async function copyText(){
+  const text=$("shareText").textContent;
+  try{await navigator.clipboard.writeText(text);$("toast").textContent="Copied! Paste it anywhere.";}
+  catch(e){const r=document.createRange();r.selectNodeContents($("shareText"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("toast").textContent="Text selected. Press copy on your device."}
+}
+$("copyBtn").onclick=copyText;
+$("shareBtn").onclick=async()=>{
+  const text=$("shareText").textContent;
+  if(navigator.share){try{await navigator.share({title:"Candy Boss",text});$("toast").textContent="Shared!";return}catch(e){if(e&&e.name==="AbortError")return}}
+  copyText();
+};
+$("again").onclick=goPlayers;
 $("toSetup2").onclick=()=>show("setup");
 
 // ---------- boot ----------
 renderRanks();
-if(favs().length){renderFavList($("favList"));show("players")}else show("setup");
+if(byRank("fav").length&&byRank("yuck").length)goPlayers();else show("setup");
 </script>
 </body>
 </html>
