@@ -1,5 +1,10 @@
-# Candy images
-These 23 `<slug>.png` files are generated placeholder illustrations (512x512, transparent background), one per entry in `manifest.json`; no real logos or photos are used.
-To use a real photo instead, save it as PNG under the same filename (e.g. `snickers.png`), with a transparent or plain background, roughly square (512x512 or larger is ideal).
-Re-render all placeholders (needs Node + Playwright Chromium, Python + Pillow): `node tools/render-candies.js img && python3 tools/finish.py img` from the repo root.
-Re-render only some: append slugs to the node command, e.g. `node tools/render-candies.js img twix kit-kat`; note this overwrites any real photo with that filename.
+# Art
+
+- `<slug>.png`: one picture per candy, 32 of them, listed in `manifest.json` (slug, name, default yuck flag, wrapper color used as a fallback).
+- `ghost-*.png`: the player character. `idle`, `run1`..`run4` (running cycle), `yay` (good catch), `sad` (yuck catch). All face right; the game mirrors them.
+- `ghost-geometry.json`: where the bucket sits in each ghost frame, as fractions of the frame. That bucket is the catch zone.
+- `bucket-*.png`: spare bucket art for decoration.
+- `og.png` (1200x630) and `icon.png` (512x512): link preview and app icon. Regenerate with `node tools/render-og.js`.
+- `source/`: the original sprite sheet and the design mockup. Re-cut the sheet with `python3 tools/slice-sheet.py` (writes `_contact.png` so you can check the numbering).
+
+To swap a candy picture, replace its `<slug>.png`; to add a candy, add a row to `manifest.json` (and to the `CANDIES` array in `index.html`) plus a PNG.

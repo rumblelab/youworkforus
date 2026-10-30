@@ -1,25 +1,194 @@
 [
-  {"slug":"almond-joy","name":"Almond Joy","yuck":true,"color":"#1f6fb2"},
-  {"slug":"mounds","name":"Mounds","yuck":true,"color":"#b4262d"},
-  {"slug":"tootsie-roll","name":"Tootsie Roll","yuck":true,"color":"#4a2a1b"},
-  {"slug":"junior-mints","name":"Junior Mints","yuck":true,"color":"#1aa37a"},
-  {"slug":"butterfinger","name":"Butterfinger","yuck":true,"color":"#f2a600"},
-  {"slug":"reeses","name":"Reese's Cups","yuck":false,"color":"#e36a1c"},
-  {"slug":"snickers","name":"Snickers","yuck":false,"color":"#6b3e17"},
-  {"slug":"kit-kat","name":"Kit Kat","yuck":false,"color":"#c8102e"},
-  {"slug":"twix","name":"Twix","yuck":false,"color":"#c9a227"},
-  {"slug":"mms","name":"M&M's","yuck":false,"color":"#7a3b1f"},
-  {"slug":"peanut-mms","name":"Peanut M&M's","yuck":false,"color":"#e8b100"},
-  {"slug":"milky-way","name":"Milky Way","yuck":false,"color":"#3b6d2f"},
-  {"slug":"three-musketeers","name":"3 Musketeers","yuck":false,"color":"#5b6c8f"},
-  {"slug":"hersheys","name":"Hershey's Bar","yuck":false,"color":"#5a3222"},
-  {"slug":"skittles","name":"Skittles","yuck":false,"color":"#d12b2b"},
-  {"slug":"starburst","name":"Starburst","yuck":false,"color":"#e8336d"},
-  {"slug":"sour-patch-kids","name":"Sour Patch Kids","yuck":false,"color":"#2faf5a"},
-  {"slug":"nerds","name":"Nerds","yuck":false,"color":"#9b3bd1"},
-  {"slug":"swedish-fish","name":"Swedish Fish","yuck":false,"color":"#d6202d"},
-  {"slug":"twizzlers","name":"Twizzlers","yuck":false,"color":"#b3121b"},
-  {"slug":"jolly-rancher","name":"Jolly Rancher","yuck":false,"color":"#1c9fd8"},
-  {"slug":"airheads","name":"Airheads","yuck":false,"color":"#36b3e8"},
-  {"slug":"crunch","name":"Crunch Bar","yuck":false,"color":"#2b63c9"}
+{
+"slug": "kit-kat",
+"name": "Kit Kat",
+"yuck": false,
+"color": "#c8102e"
+},
+{
+"slug": "mms",
+"name": "M&M's",
+"yuck": false,
+"color": "#7a3b1f"
+},
+{
+"slug": "reeses",
+"name": "Reese's Cups",
+"yuck": false,
+"color": "#e36a1c"
+},
+{
+"slug": "snickers",
+"name": "Snickers",
+"yuck": false,
+"color": "#6b3e17"
+},
+{
+"slug": "milky-way",
+"name": "Milky Way",
+"yuck": false,
+"color": "#3b6d2f"
+},
+{
+"slug": "twix",
+"name": "Twix",
+"yuck": false,
+"color": "#c9a227"
+},
+{
+"slug": "skittles",
+"name": "Skittles",
+"yuck": false,
+"color": "#d12b2b"
+},
+{
+"slug": "sour-patch-kids",
+"name": "Sour Patch Kids",
+"yuck": false,
+"color": "#2faf5a"
+},
+{
+"slug": "hersheys",
+"name": "Hershey's",
+"yuck": false,
+"color": "#5a3222"
+},
+{
+"slug": "crunch",
+"name": "Crunch",
+"yuck": false,
+"color": "#2b63c9"
+},
+{
+"slug": "100-grand",
+"name": "100 Grand",
+"yuck": false,
+"color": "#c6181f"
+},
+{
+"slug": "rolo",
+"name": "Rolo",
+"yuck": false,
+"color": "#5a2d14"
+},
+{
+"slug": "three-musketeers",
+"name": "3 Musketeers",
+"yuck": false,
+"color": "#5b6c8f"
+},
+{
+"slug": "butterfinger",
+"name": "Butterfinger",
+"yuck": true,
+"color": "#f2a600"
+},
+{
+"slug": "peanut-mms",
+"name": "Peanut M&M's",
+"yuck": false,
+"color": "#e8b100"
+},
+{
+"slug": "starburst",
+"name": "Starburst",
+"yuck": false,
+"color": "#e8336d"
+},
+{
+"slug": "tootsie-roll",
+"name": "Tootsie Roll",
+"yuck": true,
+"color": "#4a2a1b"
+},
+{
+"slug": "dots",
+"name": "Dots",
+"yuck": false,
+"color": "#f2b705"
+},
+{
+"slug": "nerds",
+"name": "Nerds",
+"yuck": false,
+"color": "#e0288f"
+},
+{
+"slug": "almond-joy",
+"name": "Almond Joy",
+"yuck": true,
+"color": "#b4262d"
+},
+{
+"slug": "mounds",
+"name": "Mounds",
+"yuck": true,
+"color": "#1f3e8f"
+},
+{
+"slug": "junior-mints",
+"name": "Junior Mints",
+"yuck": true,
+"color": "#1aa37a"
+},
+{
+"slug": "candy-corn",
+"name": "Candy Corn",
+"yuck": false,
+"color": "#ff9f1c"
+},
+{
+"slug": "jolly-rancher",
+"name": "Jolly Rancher",
+"yuck": false,
+"color": "#1c6fd8"
+},
+{
+"slug": "kisses",
+"name": "Hershey's Kisses",
+"yuck": false,
+"color": "#8a8f9a"
+},
+{
+"slug": "laffy-taffy",
+"name": "Laffy Taffy",
+"yuck": false,
+"color": "#c4123a"
+},
+{
+"slug": "milk-duds",
+"name": "Milk Duds",
+"yuck": false,
+"color": "#f2a600"
+},
+{
+"slug": "mike-and-ike",
+"name": "Mike and Ike",
+"yuck": false,
+"color": "#5bbf2a"
+},
+{
+"slug": "good-and-plenty",
+"name": "Good & Plenty",
+"yuck": false,
+"color": "#8a2bb5"
+},
+{
+"slug": "smarties",
+"name": "Smarties",
+"yuck": false,
+"color": "#e8c8e0"
+},
+{
+"slug": "twizzlers",
+"name": "Twizzlers",
+"yuck": false,
+"color": "#c8102e"
+},
+{
+"slug": "life-savers",
+"name": "Life Savers",
+"yuck": false,
+"color": "#d12b2b"
+}
 ]
