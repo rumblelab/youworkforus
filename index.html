@@ -365,7 +365,7 @@ window.addEventListener("resize",()=>{if(G&&G.running)resize()});
 
 let G=null, raf=0, lastT=0;
 // bucket art: img/bucket*.png (768x512). RIM is where candy drops in, as a fraction of the image height; BODY is how much of the width the pail spans.
-const BUCKET={w:96,h:54,aspect:512/768,rim:0.34,body:0.9};
+const BUCKET={w:96,h:54,aspect:512/768,rim:0.36,body:0.77};
 const BIMG={};["bucket","bucket-hit","bucket-yay"].forEach(k=>{const im=new Image();im.onload=()=>{im._ok=im.naturalWidth>0};im.onerror=()=>{im._ok=false};im.src=`img/${k}.png`;BIMG[k]=im});
 const SPEEDUP_EVERY=20;   // seconds between "FASTER!" callouts
 function startGame(){
