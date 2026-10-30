@@ -121,19 +121,19 @@ const GROUND = 556; // where the ghost stands
 
 // [slug, cx, cy, width, rotation]. Good candies fall toward the ghost; yuck candies get a red X.
 const GOOD = [
-  ['kit-kat', 172, 128, 158, -16],
-  ['snickers', 1030, 122, 165, 13],
-  ['reeses', 218, 300, 140, 12],
-  ['skittles', 975, 318, 132, -12],
-  ['sour-patch-kids', 408, 372, 104, -14],
-  ['mms', 806, 366, 106, 18],
+  ['kit-kat', 150, 372, 150, -16],
+  ['snickers', 1050, 372, 158, 13],
+  ['reeses', 300, 470, 130, 12],
+  ['skittles', 905, 468, 124, -12],
+  ['sour-patch-kids', 440, 392, 96, -14],
+  ['mms', 770, 392, 98, 18],
 ];
 const YUCK = [
-  ['almond-joy', 92, 246, 116, 10],
-  ['butterfinger', 1112, 244, 118, -12],
-  ['mounds', 138, 462, 132, -8],
-  ['junior-mints', 1070, 470, 120, 10],
-  ['tootsie-roll', 300, 520, 116, -6],
+  ['almond-joy', 95, 520, 118, 10],
+  ['butterfinger', 1105, 520, 122, -12],
+  ['mounds', 235, 585, 124, -8],
+  ['junior-mints', 965, 585, 116, 10],
+  ['tootsie-roll', 1000, 450, 104, -6],
 ];
 
 function candy(slug, x, y, s, rot, extra = '') {
@@ -226,9 +226,9 @@ function ogSvg() {
   <rect width="${W}" height="${H}" filter="url(#blotch)"/>
   ${paperFlecks()}
   ${neighborhood()}
-  ${logo(600, 172, 124, 580)}
-  <text x="600" y="246" text-anchor="middle" font-family="${TEXT_FONT}" font-weight="800" font-size="38" fill="${C.ink}" data-fit="tag" data-maxw="560">Train your kids to bring home</text>
-  <text x="600" y="291" text-anchor="middle" font-family="${TEXT_FONT}" font-weight="800" font-size="38" fill="${C.ink}" data-fit="tag" data-maxw="560">the good stuff.</text>
+  ${logo(600, 190, 196, 1060)}
+  <text x="600" y="272" text-anchor="middle" font-family="${TEXT_FONT}" font-weight="800" font-size="40" fill="${C.ink}" data-fit="tag" data-maxw="560">Train your kids to bring home</text>
+  <text x="600" y="320" text-anchor="middle" font-family="${TEXT_FONT}" font-weight="800" font-size="40" fill="${C.ink}" data-fit="tag" data-maxw="560">the good stuff.</text>
   ${YUCK.map(yuck).join('\n')}
   ${GOOD.map(good).join('\n')}
   <ellipse cx="610" cy="${GROUND + 2}" rx="110" ry="11" fill="#000" opacity=".4"/>
