@@ -204,9 +204,10 @@ function paperFlecks() {
 }
 
 function logo(cx, baseline, fs, maxw) {
-  const word = 'YuckyCandy';
-  const rot = '-5 3 -2 4 -3 -4 3 -2 4 -3';
-  const dy = [0, 5, -6, 5, -3, -2, 5, -5, 4, -4];
+  const word = 'yuckycandy.com';
+  const rotBase = [-5, 3, -2, 4, -3, -4, 3, -2, 4, -3], dyBase = [0, 5, -6, 5, -3, -2, 5, -5, 4, -4];
+  const rot = [...word].map((_, i) => rotBase[i % rotBase.length]).join(' ');
+  const dy = [...word].map((_, i) => dyBase[i % dyBase.length]);
   const tspans = [...word].map((ch, i) => `<tspan dy="${dy[i] - (dy[i - 1] || 0)}">${ch}</tspan>`).join('');
   const t = (attrs, dx = 0, dyy = 0) => `<text x="${cx + dx}" y="${baseline + dyy}" text-anchor="middle" font-family="${LOGO_FONT}" font-weight="900" font-size="${fs}" letter-spacing="5" rotate="${rot}" data-fit="logo" data-maxw="${maxw}" stroke-linejoin="round" stroke-linecap="round" ${attrs}>${tspans}</text>`;
   return `<g transform="rotate(-3 ${cx} ${baseline})">
