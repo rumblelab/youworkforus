@@ -125,15 +125,15 @@ const GOOD = [
   ['snickers', 1050, 372, 158, 13],
   ['reeses', 300, 470, 130, 12],
   ['skittles', 905, 468, 124, -12],
-  ['sour-patch-kids', 440, 392, 96, -14],
+  ['twix', 440, 392, 100, -14],
   ['mms', 770, 392, 98, 18],
 ];
 const YUCK = [
-  ['almond-joy', 95, 520, 118, 10],
-  ['butterfinger', 1105, 520, 122, -12],
-  ['mounds', 235, 585, 124, -8],
-  ['junior-mints', 965, 585, 116, 10],
-  ['tootsie-roll', 1000, 450, 104, -6],
+  ['butterfinger', 95, 520, 126, 10],
+  ['sour-patch-kids', 1105, 520, 112, -12],
+  ['almond-joy', 235, 585, 122, -8],
+  ['three-musketeers', 965, 585, 120, 10],
+  ['candy-corn', 1000, 450, 96, -6],
 ];
 
 function candy(slug, x, y, s, rot, extra = '') {
