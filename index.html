@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>YuckyCandy</title>
-<meta name="description" content="YuckyCandy: train your kids to bring home the good stuff. A free Halloween game: catch the good candy, dodge the yuck.">
+<meta name="description" content="Make sure your kids don't come home with Butterfingers. A free Halloween game: catch the good candy, dodge the yuck.">
 <!-- Open Graph. Scrapers need absolute image URLs. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="YuckyCandy">
 <meta property="og:title" content="YuckyCandy">
-<meta property="og:description" content="Train your kids to bring home the good stuff. Catch the good candy, dodge the yuck, three strikes and the night is over.">
+<meta property="og:description" content="Make sure your kids don't come home with Butterfingers.">
 <meta property="og:image" content="https://yuckycandy.com/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="YuckyCandy">
-<meta name="twitter:description" content="Train your kids to bring home the good stuff.">
+<meta name="twitter:description" content="Make sure your kids don't come home with Butterfingers.">
 <meta name="twitter:image" content="https://yuckycandy.com/img/og.png">
 <meta name="theme-color" content="#fbf3e4">
 <link rel="icon" href="img/icon.png">
@@ -901,13 +901,13 @@ async function copyLink(){
 $("shareBtn").onclick=()=>{if(!listOk()){$("setupHint").hidden=false;return}save("cb.yuck",yuckSlugs);copyLink()};
 let toastT;
 function gtoast(msg){const t=$("gtoast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1800)}
-async function shareGame(text){
+async function shareGame(){
   const url=gameLink();
-  if(navigator.share){try{await navigator.share({title:"YuckyCandy",text,url});return}catch(e){if(e&&e.name==="AbortError")return}}
-  try{await navigator.clipboard.writeText(url);gtoast("Link copied!")}catch(e){gtoast(url)}
+  try{await navigator.clipboard.writeText(url);gtoast("Link copied!")}
+  catch(e){const f=document.createElement("input");f.value=url;f.readOnly=true;f.style.position="fixed";f.style.opacity="0";document.body.appendChild(f);f.select();try{document.execCommand("copy");gtoast("Link copied!")}catch(err){gtoast(url)}f.remove()}
 }
-$("shareHome").onclick=()=>shareGame("Halloween is coming. Train your kids to bring home the good stuff. 🎃");
-$("shareScore").onclick=()=>{const pct=$("readyPct").textContent,n=$("finalPts").textContent;shareGame(`I caught ${n} good candies and I'm ${pct.trim()} Halloween ready on YuckyCandy. Can you beat it? 🎃`)};
+$("shareHome").onclick=shareGame;
+$("shareScore").onclick=shareGame;
 $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
 $("toSetupHome").onclick=goSetup;
