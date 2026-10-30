@@ -168,17 +168,15 @@ p{margin:0}
 .perf{position:relative;width:100%;height:0;border-top:3px dashed rgba(36,24,15,.35)}
 .yband{display:inline-block;transform:rotate(-3deg);background:var(--yuck);color:#fff;font-family:var(--display);font-size:1rem;letter-spacing:.12em;
   padding:5px 16px 2px;border:2.5px solid var(--ink);border-radius:8px;box-shadow:0 3px 0 var(--ink);text-shadow:1px 1px 0 var(--ink)}
-.card .dodgelist{gap:8px 8px;width:100%}
+.card .dodgelist{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 8px;width:100%}
 .card .dodgelist .th{width:56px}
 .card .dodgelist .cap{font-size:.62rem;margin:2px -6px 0}
 .card .dodgelist .th .wrapimg::after{inset:-1px 6px;background-size:auto}
 .card .dodgelist:has(.th:nth-child(7)) .th{width:48px}
 .card .dodgelist:has(.th:nth-child(7)) .cap{display:none}
 .brand{display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;margin-top:4px}
-.wordmark{font-family:var(--logo);font-size:1.25rem;color:var(--red);letter-spacing:.01em;
+.wordmark{font-family:var(--logo);font-size:1.5rem;color:var(--red);letter-spacing:.01em;
   text-shadow:-1.5px -1.5px 0 var(--ink),1.5px -1.5px 0 var(--ink),-1.5px 1.5px 0 var(--ink),1.5px 1.5px 0 var(--ink),0 2.5px 0 var(--ink)}
-.brand .domain{font-family:var(--display);font-size:1.05rem;letter-spacing:.04em;color:var(--ink)}
-.brand .domain:empty{display:none}
 .endbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
 .endbtns .btn{font-size:1.1rem;padding:12px 8px 9px;width:100%}
 #results:not([hidden]) .card{animation:cardIn .4s cubic-bezier(.2,1.2,.4,1) both}
@@ -307,7 +305,7 @@ p{margin:0}
     <div class="tk-stub">
       <p class="yband">The yuck list</p>
       <div id="dodgeList2" class="thumbs dodgelist"></div>
-      <p class="brand"><span class="wordmark">YuckyCandy</span><span class="domain" id="siteDomain"></span></p>
+      <p class="brand"><span class="wordmark" id="siteDomain">yuckycandy.com</span></p>
     </div>
   </div>
   <div class="endbtns">
@@ -796,7 +794,7 @@ function endGame(){
   gimg.hidden=false;gimg.dataset.k=gk;gimg.onerror=()=>{gimg.hidden=true};gimg.src=`img/${gk}.png`;
   // the good-candy stat wears the full bucket; a plain check mark if that art is missing
   const gi=$("goodIcon");if(!gi.querySelector("img")){const b=new Image();b.alt="";b.onload=()=>{gi.textContent="";gi.appendChild(b)};b.onerror=()=>{gi.classList.remove("bucket")};b.src="img/bucket-full.png"}
-  $("siteDomain").textContent=SITE_URL.replace(/^https?:\/\//,"");
+  $("siteDomain").textContent=(SITE_URL||"yuckycandy.com").replace(/^https?:\/\//,"");
   show("results");
 }
 // share the game link (from the yuck list editor)
