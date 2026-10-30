@@ -54,12 +54,23 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
   box-shadow:inset 0 -5px 0 rgba(0,0,0,.18),0 3px 8px rgba(0,0,0,.35)}
 .cap{display:block;margin-top:5px;font-size:.78rem;font-weight:800;line-height:1.15;text-align:center;color:var(--moon);overflow-wrap:anywhere}
 
-/* screen 1: tappable tiles */
+/* yuck list editor: two columns, tap or drag between them */
+.editor{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.editor .col{padding:12px;min-height:200px;transition:box-shadow .15s}
+.editor .col.over{box-shadow:0 0 0 3px var(--moon)}
+.editor .tiles{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+.editor .cap{font-size:.68rem;overflow-wrap:normal;hyphens:auto;letter-spacing:-.01em}
+.yuckcol{border-color:rgba(255,95,122,.55)}
+.yumcol{border-color:rgba(142,240,90,.45)}
+.drag-ghost{position:fixed;z-index:50;width:84px;pointer-events:none;opacity:.9;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg)}
+.tile.lifted{opacity:.3}
+.yuckhead{color:var(--yuck);font-size:2.2rem;letter-spacing:.04em}
+.panel.dodge{border-color:rgba(255,95,122,.55)}
 .sechead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .sechead.y h3{color:var(--yuck)}
 .sechead.g h3{color:var(--good)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:14px 12px}
-.tile{font-family:var(--body);color:var(--moon);background:none;border:0;padding:0;cursor:pointer;display:block;text-align:center;transition:transform .12s}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:12px 8px}
+.tile{font-family:var(--body);color:var(--moon);background:none;border:0;padding:0;cursor:grab;display:block;text-align:center;transition:transform .12s;touch-action:none}
 .tile:hover{transform:scale(1.05)}
 .tile:active{transform:scale(.97)}
 .tile.yuck .cimg{box-shadow:0 0 0 3px var(--yuck),0 3px 8px rgba(0,0,0,.35)}
@@ -92,7 +103,7 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 .score small,.hud .lab{font-size:.8rem;color:var(--moon-dim);display:block;line-height:1;margin-bottom:4px}
 .score small{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .timer{font-size:1.8rem;font-variant-numeric:tabular-nums;line-height:1}
-.timer.low{color:var(--yuck)}
+
 .lives{font-size:1.5rem;letter-spacing:.05em;line-height:1}
 .stage{position:relative;width:100%;height:min(68vh,620px);border-radius:18px;overflow:hidden;border:1px solid var(--line);
   background:linear-gradient(#1d1440 0%,#2b2152 70%,#3a2a4a 100%);touch-action:none;user-select:none;-webkit-user-select:none}
@@ -119,63 +130,33 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
 <body>
 <div class="wrap">
 
-<!-- SCREEN 1: the parent sets the yuck list -->
-<section id="setup" class="screen">
+<!-- START: enter your name, see the yuck list -->
+<section id="players" class="screen">
   <div>
-    <p class="eyebrow">The house rules</p>
+    <p class="eyebrow">Trick or treat</p>
     <h1>Candy Boss</h1>
-    <h2 style="margin-top:6px">The yuck list</h2>
-    <p class="muted" style="margin-top:8px">We're opinionated. These five are the nasties. Toss in a couple more if you must.</p>
-  </div>
-  <div class="panel">
-    <div class="sechead y"><h3>Yuck</h3><span class="muted" id="yuckCount"></span></div>
-    <div id="yuckGrid" class="tiles"></div>
-  </div>
-  <div class="panel">
-    <div class="sechead g"><h3>Good</h3><span class="muted" id="goodCount"></span></div>
-    <div id="goodGrid" class="tiles"></div>
-  </div>
-  <p class="muted" style="font-size:.95rem">Tap any candy to move it between Good and Yuck.</p>
-  <div class="row">
-    <button class="btn big" id="toPlayers">Show the kids →</button>
-    <button class="linkbtn" id="resetRanks">Reset to house rules</button>
-  </div>
-  <p id="setupHint" class="muted" hidden>You need at least one Yuck candy and at least one Good candy.</p>
-</section>
-
-<!-- SCREEN 2: the kid studies up -->
-<section id="players" class="screen" hidden>
-  <div>
-    <p class="eyebrow">Study up</p>
-    <h2>Know your candy before you play</h2>
-  </div>
-  <div class="compare">
-    <div class="panel catch"><h3>CATCH these</h3><div id="catchList" class="thumbs"></div></div>
-    <div class="panel dodge"><h3>DODGE these</h3><div id="dodgeList" class="thumbs"></div></div>
   </div>
   <div class="panel screen" style="gap:12px">
-    <label for="kidName" style="font-weight:800">Your name</label>
-    <input id="kidName" type="text" maxlength="20" placeholder="Type your name" autocomplete="off">
-    <div style="font-weight:800">How long?</div>
-    <div class="row" id="timeChips">
-      <button class="chip" data-n="30" aria-pressed="false">30 seconds</button>
-      <button class="chip" data-n="45" aria-pressed="true">45 seconds</button>
-      <button class="chip" data-n="60" aria-pressed="false">60 seconds</button>
-    </div>
-    <p class="muted" style="font-size:.95rem">Slide your finger (or the mouse) to move the bucket. Arrow keys work too. Catch 3 yuck candies and the night is over!</p>
+    <label for="kidName" style="font-weight:800;font-size:1.2rem">Enter your name</label>
+    <input id="kidName" type="text" maxlength="20" placeholder="Your name" autocomplete="off">
   </div>
+  <div class="panel dodge">
+    <h3 class="yuckhead">YUCK</h3>
+    <p style="font-weight:800;margin-bottom:12px">Don't catch these candies.</p>
+    <div id="dodgeList" class="thumbs"></div>
+  </div>
+  <p class="muted" style="font-size:.95rem">Slide to move the bucket. Catch everything else. Three yuck candies and your night is over. It keeps getting faster!</p>
   <div class="row">
-    <button class="btn big" id="startGame">I'm ready. Trick or treat! 🎃</button>
-    <button class="btn ghost" id="backToSetup">Change the yuck list</button>
+    <button class="btn big" id="startGame">Trick or treat! 🎃</button>
   </div>
 </section>
 
-<!-- SCREEN 3: the catch game -->
+<!-- PLAY -->
 <section id="play" class="screen" hidden>
   <div class="hud">
     <div class="score"><small id="whoPlays">Player</small><span id="scoreNum">0</span> <span class="unit">caught</span></div>
     <div style="text-align:center"><span class="lab">Lives</span><div class="lives" id="lives">🎃🎃🎃</div></div>
-    <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">45</div></div>
+    <div style="text-align:right"><span class="lab">Time</span><div class="timer" id="timer">0:00</div></div>
   </div>
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
@@ -188,10 +169,10 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
   </div>
 </section>
 
-<!-- SCREEN 4: results + share -->
+<!-- RESULTS + SHARE -->
 <section id="results" class="screen" hidden>
   <div style="text-align:center">
-    <p class="eyebrow" id="endReason">Time's up!</p>
+    <p class="eyebrow" id="endReason">Three yuck candies. The bag is ruined!</p>
     <h2 id="resultTitle">Great haul!</h2>
     <div class="stars" id="starRow">⭐⭐⭐</div>
     <div class="pts" id="finalPts" style="color:var(--pumpkin)">0</div>
@@ -208,10 +189,6 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
     <div class="toast" id="toast"></div>
   </div>
   <div class="panel">
-    <p class="eyebrow" style="color:var(--yuck)">Dodge list</p>
-    <div id="dodgeList2" class="thumbs dodgelist" style="margin-top:10px"></div>
-  </div>
-  <div class="panel">
     <p class="eyebrow">Top scores</p>
     <ol class="hs" id="hsList" style="margin-top:8px"></ol>
   </div>
@@ -219,6 +196,24 @@ input[type=text]{font:inherit;font-weight:700;font-size:1.3rem;padding:12px 16px
     <button class="btn big" id="again">Play again 🎃</button>
     <button class="btn ghost" id="toSetup2">Change the yuck list</button>
   </div>
+</section>
+
+<!-- YUCK LIST EDITOR: only reachable after a round -->
+<section id="setup" class="screen" hidden>
+  <div>
+    <p class="eyebrow">The house rules</p>
+    <h2>Change the yuck list</h2>
+    <p class="muted" style="margin-top:8px">Slide a candy to the other side, or just tap it.</p>
+  </div>
+  <div class="editor" id="editor">
+    <div class="panel col yuckcol" data-side="yuck"><div class="sechead y"><h3>Yuck</h3><span class="muted" id="yuckCount"></span></div><div id="yuckGrid" class="tiles"></div></div>
+    <div class="panel col yumcol" data-side="yum"><div class="sechead g"><h3>Yum</h3><span class="muted" id="goodCount"></span></div><div id="goodGrid" class="tiles"></div></div>
+  </div>
+  <div class="row">
+    <button class="btn big" id="toPlayers">Done →</button>
+    <button class="linkbtn" id="resetRanks">Reset to house rules</button>
+  </div>
+  <p id="setupHint" class="muted" hidden>You need at least one Yuck candy and at least one Yum candy.</p>
 </section>
 
 </div>
@@ -260,8 +255,7 @@ const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let yuckSlugs=Array.isArray(load("cb.yuck",null))?[...new Set(load("cb.yuck",[]).filter(s=>BY_SLUG[s]))]:null;
 const hadSaved=!!yuckSlugs&&yuckSlugs.length>=1&&yuckSlugs.length<CANDIES.length;
 if(!hadSaved)yuckSlugs=DEFAULT_YUCK.slice();
-let scores=load("cb.scores2",[]);   // [{name,score,secs,date}] score = good candies caught
-let gameSecs=45;
+let scores=load("cb.scores3",[]);   // [{name,score,secs,date}] score = good candies caught, secs = how long they lasted
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
@@ -305,38 +299,60 @@ function beep(kind){
   }catch(e){}
 }
 
-// ---------- screen 1: the yuck list ----------
+// ---------- yuck list editor ----------
+function moveCandy(slug,toYuck){
+  const was=yuckSlugs.includes(slug);if(was===toYuck)return;
+  yuckSlugs=toYuck?[...yuckSlugs,slug]:yuckSlugs.filter(s=>s!==slug);
+  save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup();
+  const again=document.querySelector(`.tile[data-slug="${slug}"]`);if(again){again.classList.add("pop");again.focus({preventScroll:true})}
+}
 function tile(c){
   const yuck=isYuck(c);
   const b=document.createElement("button");b.className="tile"+(yuck?" yuck":"");b.dataset.slug=c.slug;
-  b.setAttribute("aria-label",`${c.name}: ${yuck?"yuck":"good"}. Tap to move to ${yuck?"good":"yuck"}.`);
+  b.setAttribute("aria-label",`${c.name}: ${yuck?"yuck":"yum"}. Tap to move to ${yuck?"yum":"yuck"}.`);
   const cap=document.createElement("span");cap.className="cap";cap.textContent=c.name;
   b.append(candyImg(c),cap);
-  b.onclick=()=>{
-    yuckSlugs=yuck?yuckSlugs.filter(s=>s!==c.slug):[...yuckSlugs,c.slug];
-    save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup();
-    const again=document.querySelector(`.tile[data-slug="${c.slug}"]`);if(again)again.focus({preventScroll:true});
-  };
   return b;
 }
 function renderSetup(){
   const fill=(el,list,msg)=>{el.innerHTML="";if(!list.length){el.innerHTML=`<p class="empty">${msg}</p>`}list.forEach(c=>el.appendChild(tile(c)))};
-  fill($("yuckGrid"),yucks(),"Nothing here yet. Tap a good candy to make it yuck.");
-  fill($("goodGrid"),goods(),"Nothing here yet. Tap a yuck candy to make it good.");
+  fill($("yuckGrid"),yucks(),"Nothing here. Slide a candy over.");
+  fill($("goodGrid"),goods(),"Nothing here. Slide a candy over.");
   $("yuckCount").textContent=yucks().length;$("goodCount").textContent=goods().length;
 }
+// tap moves a candy across; a real drag (finger or mouse) drops it on either column
+(()=>{
+  const ed=$("editor");let drag=null;
+  ed.addEventListener("pointerdown",e=>{const t=e.target.closest(".tile");if(!t)return;drag={t,slug:t.dataset.slug,x0:e.clientX,y0:e.clientY,ghost:null,id:e.pointerId};});
+  ed.addEventListener("pointermove",e=>{
+    if(!drag||e.pointerId!==drag.id)return;
+    if(!drag.ghost){if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<10)return;
+      drag.ghost=drag.t.cloneNode(true);drag.ghost.className="tile drag-ghost";document.body.appendChild(drag.ghost);drag.t.classList.add("lifted");
+      try{ed.setPointerCapture(e.pointerId)}catch(err){}}
+    drag.ghost.style.left=e.clientX+"px";drag.ghost.style.top=e.clientY+"px";
+    const col=document.elementFromPoint(e.clientX,e.clientY)?.closest(".col");
+    ed.querySelectorAll(".col").forEach(c=>c.classList.toggle("over",c===col));
+  });
+  const finish=e=>{
+    if(!drag||e.pointerId!==drag.id)return;
+    const d=drag;drag=null;
+    ed.querySelectorAll(".col").forEach(c=>c.classList.remove("over"));
+    if(d.ghost){d.ghost.remove();d.t.classList.remove("lifted");
+      const col=document.elementFromPoint(e.clientX,e.clientY)?.closest(".col");
+      if(col)moveCandy(d.slug,col.dataset.side==="yuck");}
+    else moveCandy(d.slug,!yuckSlugs.includes(d.slug));   // a plain tap toggles
+  };
+  ed.addEventListener("pointerup",finish);ed.addEventListener("pointercancel",finish);
+})();
 $("resetRanks").onclick=()=>{yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs);$("setupHint").hidden=true;renderSetup()};
 $("toPlayers").onclick=()=>{
   if(!listOk()){$("setupHint").hidden=false;return}
-  $("setupHint").hidden=true;save("cb.yuck",yuckSlugs);goPlayers();$("kidName").focus({preventScroll:true});
+  $("setupHint").hidden=true;save("cb.yuck",yuckSlugs);goPlayers();
 };
 function goSetup(){renderSetup();show("setup")}
 
-// ---------- screen 2: study up ----------
-function goPlayers(){fillThumbs($("catchList"),goods());fillThumbs($("dodgeList"),yucks());show("players")}
-$("timeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
-  [...$("timeChips").children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");gameSecs=+b.dataset.n});
-$("backToSetup").onclick=goSetup;
+// ---------- start screen ----------
+function goPlayers(){fillThumbs($("dodgeList"),yucks());show("players")}
 $("kidName").value=load("cb.lastName","");
 $("startGame").onclick=startGame;
 $("kidName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
@@ -348,15 +364,17 @@ function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=stage.clientWidth
 window.addEventListener("resize",()=>{if(G&&G.running)resize()});
 
 let G=null, raf=0, lastT=0;
-const BUCKET={w:96,h:54};
-const FINAL_SECS=8;
+// bucket art: img/bucket*.png (768x512). RIM is where candy drops in, as a fraction of the image height; BODY is how much of the width the pail spans.
+const BUCKET={w:96,h:54,aspect:512/768,rim:0.34,body:0.9};
+const BIMG={};["bucket","bucket-hit","bucket-yay"].forEach(k=>{const im=new Image();im.onload=()=>{im._ok=im.naturalWidth>0};im.onerror=()=>{im._ok=false};im.src=`img/${k}.png`;BIMG[k]=im});
+const SPEEDUP_EVERY=20;   // seconds between "FASTER!" callouts
 function startGame(){
-  if(!listOk()){goSetup();return}
+  if(!listOk()){yuckSlugs=DEFAULT_YUCK.slice();save("cb.yuck",yuckSlugs)}
   const name=($("kidName").value.trim()||"Trick-or-treater").slice(0,20);save("cb.lastName",name);
   show("play");resize();
-  G={name,secs:gameSecs,lives:MAX_LIVES,timeLeft:gameSecs,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.min(BUCKET.w,W*.28),
+  G={name,lives:MAX_LIVES,elapsed:0,bx:W/2,targetX:W/2,bucketW:Math.round(Math.max(96,Math.min(132,W*.3))),
      items:[],floaters:[],spawnIn:0.4,lastX:-999,goodCaught:0,goodMissed:0,yuckCaught:0,yuckDodged:0,dodged:{},
-     running:false,over:false,shakeT:0,keys:{}};
+     running:false,over:false,shakeT:0,hitT:0,yayT:0,calloutT:0,nextCallout:SPEEDUP_EVERY,keys:{}};
   const me=G, alive=()=>G===me;
   $("whoPlays").textContent=name;updateHud();
   // 3-2-1 countdown, then go (guarded so quitting mid-countdown cannot start a stale game)
@@ -368,14 +386,14 @@ function startGame(){
 function updateHud(){
   $("scoreNum").textContent=G.goodCaught;
   $("lives").textContent="🎃".repeat(G.lives)+"🕸️".repeat(MAX_LIVES-G.lives);
-  const t=$("timer");t.textContent=Math.ceil(G.timeLeft);t.classList.toggle("low",G.timeLeft<=FINAL_SECS);
+  const e=Math.floor(G.elapsed);$("timer").textContent=`${Math.floor(e/60)}:${String(e%60).padStart(2,"0")}`;
 }
-// difficulty ramps with progress p (0 at the start of the round, 1 at the end)
-const prog=()=>Math.min(1,G.elapsed/G.secs);
-const fallSpeed=()=>140+220*prog();          // px/s, 140 -> 360
-const spawnGap=()=>0.9-0.57*prog();          // s, 0.9 -> 0.33
+// difficulty keeps ramping with time: quick at first, then a slower climb to a hard cap
+const ramp=()=>Math.min(1,G.elapsed/60), ramp2=()=>Math.min(1,Math.max(0,G.elapsed-60)/90);
+const fallSpeed=()=>140+200*ramp()+180*ramp2();     // px/s, 140 -> 340 at 1:00 -> 520 at 2:30
+const spawnGap=()=>0.9-0.5*ramp()-0.13*ramp2();     // s, 0.9 -> 0.4 -> 0.27
 function spawn(){
-  const yuck=Math.random()<.3;
+  const yuck=Math.random()<.2+.15*ramp();   // 20% yuck at the start, 35% after a minute
   const c=pick(yuck?yucks():goods());
   const baseW=Math.round(Math.max(72,Math.min(84,W*.21)));
   const im=IMGS[c.slug], useImg=imgOk(im);
@@ -391,8 +409,9 @@ function spawn(){
 function loop(now){
   if(!G||!G.running)return;
   const dt=Math.min(0.05,(now-lastT)/1000);lastT=now;
-  G.elapsed+=dt;G.timeLeft-=dt;
-  if(G.timeLeft<=0){G.timeLeft=0;return endGame("time")}
+  G.elapsed+=dt;
+  if(G.elapsed>=G.nextCallout){G.nextCallout+=SPEEDUP_EVERY;G.calloutT=1.6}
+  if(G.calloutT>0)G.calloutT-=dt;
   // movement
   if(G.keys.ArrowLeft)G.targetX-=420*dt; if(G.keys.ArrowRight)G.targetX+=420*dt;
   G.targetX=Math.max(G.bucketW/2,Math.min(W-G.bucketW/2,G.targetX));
@@ -400,28 +419,29 @@ function loop(now){
   // spawn
   G.spawnIn-=dt;if(G.spawnIn<=0){spawn();G.spawnIn=spawnGap()}
   // items
-  const bucketTop=H-BUCKET.h-14, bl=G.bx-G.bucketW/2, br=G.bx+G.bucketW/2;
+  const bh=bucketImgOk()?G.bucketW*BUCKET.aspect:BUCKET.h, bucketTop=H-bh-10;
+  const rim=bucketImgOk()?bucketTop+bh*BUCKET.rim:bucketTop, half=G.bucketW*(bucketImgOk()?BUCKET.body:1)/2, bl=G.bx-half, br=G.bx+half;
   for(const it of G.items){
     it.y+=it.vy*dt;it.x=Math.max(it.w/2,Math.min(W-it.w/2,it.x+it.drift*dt));it.t+=dt;it.rot=it.rot0+Math.sin(it.t*2.2)*.3;
-    if(!it.done&&it.y+it.h*.35>=bucketTop&&it.y-it.h/2<bucketTop+BUCKET.h&&it.x>bl+4&&it.x<br-4){it.done=true;catchIt(it);if(G.over)return}
+    if(!it.done&&it.y+it.h*.35>=rim&&it.y-it.h/2<rim+36&&it.x>bl+4&&it.x<br-4){it.done=true;catchIt(it);if(G.over)return}
     else if(!it.done&&it.y-it.h/2>H){it.done=true;if(it.yuck){G.yuckDodged++;G.dodged[it.c.name]=1}else G.goodMissed++}
   }
   G.items=G.items.filter(i=>!i.done);
   for(const f of G.floaters){f.y-=60*dt;f.t-=dt}
   G.floaters=G.floaters.filter(f=>f.t>0);
-  if(G.shakeT>0)G.shakeT-=dt;
+  if(G.shakeT>0)G.shakeT-=dt;if(G.hitT>0)G.hitT-=dt;if(G.yayT>0)G.yayT-=dt;
   updateHud();draw(bucketTop);
   raf=requestAnimationFrame(loop);
 }
 function catchIt(it){
   if(it.yuck){
-    G.yuckCaught++;G.lives--;G.shakeT=0.35;
+    G.yuckCaught++;G.lives--;G.shakeT=0.35;G.hitT=0.5;G.yayT=0;
     G.floaters.push({x:it.x,y:it.y-20,t:1.1,text:"YUCK!",color:"#ff5f7a",big:true});
     beep("yuck");
     if(navigator.vibrate){try{navigator.vibrate(80)}catch(e){}}
-    if(G.lives<=0)endGame("lives");
+    if(G.lives<=0)endGame();
   }else{
-    G.goodCaught++;
+    G.goodCaught++;G.yayT=0.35;
     G.floaters.push({x:it.x,y:it.y-20,t:0.9,text:"+1",color:"#8ef05a"});
     beep("good");
   }
@@ -440,13 +460,13 @@ function draw(bucketTop){
   for(const f of G.floaters){ctx.font=`700 ${f.big?30:24}px Fredoka, Nunito, sans-serif`;ctx.globalAlpha=Math.min(1,f.t*1.5);
     ctx.lineWidth=4;ctx.strokeStyle="rgba(23,16,46,.85)";ctx.strokeText(f.text,f.x,f.y);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y)}
   ctx.globalAlpha=1;
-  // final seconds caption
-  if(G.timeLeft<=FINAL_SECS){
-    const k=Math.sin(performance.now()/110);
-    ctx.save();ctx.translate(W/2,46);ctx.scale(1+.07*k,1+.07*k);ctx.globalAlpha=.8+.2*k;
-    ctx.font="700 30px Fredoka, Nunito, sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.lineWidth=6;ctx.strokeStyle="rgba(23,16,46,.9)";ctx.strokeText("FINAL SECONDS!",0,0);
-    ctx.fillStyle="#ff8a2b";ctx.fillText("FINAL SECONDS!",0,0);ctx.restore();
+  // speed-up callout
+  if(G.calloutT>0){
+    const k=Math.sin(performance.now()/110), a=Math.min(1,G.calloutT*2);
+    ctx.save();ctx.translate(W/2,46);ctx.scale(1+.07*k,1+.07*k);ctx.globalAlpha=a;
+    ctx.font="700 32px Fredoka, Nunito, sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.lineWidth=6;ctx.strokeStyle="rgba(23,16,46,.9)";ctx.strokeText("FASTER!",0,0);
+    ctx.fillStyle="#ff8a2b";ctx.fillText("FASTER!",0,0);ctx.restore();
   }
 }
 function drawCandy(it){
@@ -473,8 +493,19 @@ function drawCandy(it){
   ctx.fillText(it.c.name,0,1);
   ctx.restore();
 }
+const bucketImgOk=()=>imgOk(BIMG.bucket);
 function drawBucket(x,top){
-  const w=G.bucketW,h=BUCKET.h;
+  const w=G.bucketW;
+  if(bucketImgOk()){
+    let im=BIMG.bucket;
+    if(G.hitT>0&&imgOk(BIMG["bucket-hit"]))im=BIMG["bucket-hit"];
+    else if(G.yayT>0&&imgOk(BIMG["bucket-yay"]))im=BIMG["bucket-yay"];
+    const h=w*BUCKET.aspect, squash=G.yayT>0?1+G.yayT*.25:1;
+    ctx.save();ctx.translate(x,top+h);ctx.scale(2-squash,squash);
+    ctx.shadowColor="rgba(0,0,0,.5)";ctx.shadowBlur=12;ctx.shadowOffsetY=4;
+    ctx.drawImage(im,-w/2,-h,w,h);ctx.restore();return;
+  }
+  const h=BUCKET.h;
   ctx.save();ctx.translate(x,top);
   // handle
   ctx.strokeStyle="#3a2a1a";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,6,w*.42,Math.PI*1.05,Math.PI*1.95);ctx.stroke();
@@ -507,26 +538,22 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
 $("quit").onclick=()=>{if(G){G.running=false;cancelAnimationFrame(raf);G=null}goPlayers()};
 
 // ---------- screen 4: results + share ----------
-function endGame(reason){
+function endGame(){
   if(G.over)return;
   G.running=false;G.over=true;cancelAnimationFrame(raf);updateHud();beep("over");$("paused").hidden=true;
-  const secs=G.secs, played=reason==="time"?secs:Math.max(1,Math.round(G.elapsed));
-  const good=G.goodCaught, yuck=G.yuckCaught;
-  const stars=(yuck===0&&good>=secs/2)?3:(yuck<=1&&good>=secs/4)?2:good>0?1:0;
-  $("endReason").textContent=reason==="time"?"Time's up!":"Three yuck candies. The bag is ruined!";
+  const played=Math.max(1,Math.round(G.elapsed)), good=G.goodCaught, yuck=G.yuckCaught;
+  const stars=good>=40?3:good>=20?2:good>=5?1:0;
   $("resultTitle").textContent=stars===3?"Candy Boss approved!":stars===2?"Great haul!":stars===1?"Not bad, keep training!":"Yikes. Study the yuck list!";
   $("starRow").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
   $("finalPts").textContent=good;
-  $("finalLine").textContent=`good ${plural(good,"candy","candies")} caught`+(reason==="time"?` in ${secs} seconds by ${G.name}`:`. ${G.name} lasted ${played} seconds`);
+  $("finalLine").textContent=`good ${plural(good,"candy","candies")} caught. ${G.name} lasted ${played} seconds.`;
   $("breakdown").innerHTML=`<span>✅ Good caught</span><b>${good}</b><span>Good missed</span><b>${G.goodMissed}</b><span>❌ Yuck caught</span><b>${yuck}</b><span>Yuck dodged</span><b>${G.yuckDodged}</b>`;
-  fillThumbs($("dodgeList2"),yucks());
   const dodgedNames=Object.keys(G.dodged);
-  const yuckLine=yuck===0?`dodged every ${dodgedNames.length?pick(dodgedNames):"yuck candy"}`:`got stuck with ${yuck} yuck ${plural(yuck,"candy","candies")}`;
-  const text=`🎃 Candy Boss: ${G.name} caught ${good} good ${plural(good,"candy","candies")} in ${played}s and ${yuckLine}.${stars?" "+"⭐".repeat(stars):""} Can you beat it? 🍬`;
+  const text=`🎃 Candy Boss: ${G.name} caught ${good} good ${plural(good,"candy","candies")} and lasted ${played}s before the third yuck candy${dodgedNames.length?` (dodged ${G.yuckDodged} ${plural(G.yuckDodged,"nasty","nasties")} like ${pick(dodgedNames)})`:""}.${stars?" "+"⭐".repeat(stars):""} Can you beat it? 🍬`;
   $("shareText").textContent=text;$("toast").textContent="";
-  scores.push({name:G.name,score:good,secs,date:new Date().toISOString().slice(0,10)});
-  scores.sort((a,b)=>b.score-a.score);scores=scores.slice(0,8);save("cb.scores2",scores);
-  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· ${s.secs}s</small></span><b>${s.score} caught</b></li>`).join("");
+  scores.push({name:G.name,score:good,secs:played,date:new Date().toISOString().slice(0,10)});
+  scores.sort((a,b)=>b.score-a.score||b.secs-a.secs);scores=scores.slice(0,8);save("cb.scores3",scores);
+  $("hsList").innerHTML=scores.map(s=>`<li><span>${esc(s.name)} <small class="muted">· lasted ${s.secs}s</small></span><b>${s.score} caught</b></li>`).join("");
   show("results");
 }
 async function copyText(){
@@ -544,8 +571,7 @@ $("again").onclick=goPlayers;
 $("toSetup2").onclick=goSetup;
 
 // ---------- boot ----------
-renderSetup();
-if(hadSaved)goPlayers();else show("setup");
+renderSetup();goPlayers();
 </script>
 </body>
 </html>
